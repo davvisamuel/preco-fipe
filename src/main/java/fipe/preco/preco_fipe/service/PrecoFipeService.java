@@ -1,6 +1,7 @@
 package fipe.preco.preco_fipe.service;
 
 import fipe.preco.preco_fipe.response.BrandResponse;
+import fipe.preco.preco_fipe.response.FipeInformationResponse;
 import fipe.preco.preco_fipe.response.ModelResponse;
 import fipe.preco.preco_fipe.response.YearResponse;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,14 @@ public class PrecoFipeService {
                 .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models/%s/years".formatted(vehicleType, brandId, modelId))
                 .retrieve()
                 .body(typeReference);
+    }
+
+    public FipeInformationResponse retrieveFipeInformation(String vehicleType, String brandId, String modelId, String yearId) {
+
+        return fipeApiClient.build()
+                .get()
+                .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models/%s/years/%s".formatted(vehicleType, brandId, modelId, yearId))
+                .retrieve()
+                .body(FipeInformationResponse.class);
     }
 }
