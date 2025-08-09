@@ -1,0 +1,11 @@
+spring:
+  application:
+   name: preco-fipe
+
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    tomcat:
+      max-active: 20
