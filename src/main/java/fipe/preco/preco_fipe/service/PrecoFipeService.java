@@ -2,6 +2,7 @@ package fipe.preco.preco_fipe.service;
 
 import fipe.preco.preco_fipe.response.BrandResponse;
 import fipe.preco.preco_fipe.response.ModelResponse;
+import fipe.preco.preco_fipe.response.YearResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,16 @@ public class PrecoFipeService {
         return fipeApiClient.build()
                 .get()
                 .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models".formatted(vehicleType, brandId))
+                .retrieve()
+                .body(typeReference);
+    }
+
+    public List<YearResponse> findAllYearsByModelId(String vehicleType, String brandId, String modelId) {
+        var typeReference = new ParameterizedTypeReference<List<YearResponse>>() {};
+
+        return fipeApiClient.build()
+                .get()
+                .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models/%s/years".formatted(vehicleType, brandId, modelId))
                 .retrieve()
                 .body(typeReference);
     }

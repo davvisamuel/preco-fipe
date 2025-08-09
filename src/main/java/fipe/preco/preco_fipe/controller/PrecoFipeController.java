@@ -2,6 +2,7 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.response.BrandResponse;
 import fipe.preco.preco_fipe.response.ModelResponse;
+import fipe.preco.preco_fipe.response.YearResponse;
 import fipe.preco.preco_fipe.service.PrecoFipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,14 @@ public class PrecoFipeController {
     @GetMapping("/{vehicleType}/brands/{brandId}/models")
     public ResponseEntity<List<ModelResponse>> findAllModelsByBrandId(@PathVariable String vehicleType, @PathVariable String brandId) {
         var allModelsByBrandId = precoFipeService.findAllModelsByBrandId(vehicleType, brandId);
+        return ResponseEntity.ok(allModelsByBrandId);
+    }
+
+    @GetMapping("/{vehicleType}/brands/{brandId}/models/{modelId}/years")
+    public ResponseEntity<List<YearResponse>> findAllYearsByModelId(@PathVariable String vehicleType,
+                                                                    @PathVariable String brandId,
+                                                                    @PathVariable String modelId) {
+        var allModelsByBrandId = precoFipeService.findAllYearsByModelId(vehicleType, brandId, modelId);
         return ResponseEntity.ok(allModelsByBrandId);
     }
 }
