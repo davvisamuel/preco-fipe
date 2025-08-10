@@ -1,5 +1,6 @@
 package fipe.preco.preco_fipe.service;
 
+import fipe.preco.preco_fipe.config.FipeApiConfiguration;
 import fipe.preco.preco_fipe.response.BrandResponse;
 import fipe.preco.preco_fipe.response.FipeInformationResponse;
 import fipe.preco.preco_fipe.response.ModelResponse;
@@ -16,13 +17,14 @@ import java.util.List;
 public class PrecoFipeService {
 
     public final RestClient.Builder fipeApiClient;
+    public final FipeApiConfiguration fipeApiConfiguration;
 
     public List<BrandResponse> findAllBrandsByType(String vehicleType) {
         var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {};
 
         return fipeApiClient.build()
                 .get()
-                .uri("https://fipe.parallelum.com.br/api/v2/%s/brands".formatted(vehicleType))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.brandsUri().formatted(vehicleType))
                 .retrieve()
                 .body(typeReference);
     }
@@ -32,7 +34,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models".formatted(vehicleType, brandId))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.modelsUri().formatted(vehicleType, brandId))
                 .retrieve()
                 .body(typeReference);
     }
@@ -42,7 +44,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models/%s/years".formatted(vehicleType, brandId, modelId))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.yearsUri().formatted(vehicleType, brandId, modelId))
                 .retrieve()
                 .body(typeReference);
     }
@@ -51,7 +53,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri("https://fipe.parallelum.com.br/api/v2/%s/brands/%s/models/%s/years/%s".formatted(vehicleType, brandId, modelId, yearId))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.fipeInformationUri().formatted(vehicleType, brandId, modelId, yearId))
                 .retrieve()
                 .body(FipeInformationResponse.class);
     }

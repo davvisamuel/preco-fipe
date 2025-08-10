@@ -1,6 +1,6 @@
 spring:
   application:
-   name: preco-fipe
+    name: preco-fipe
 
   threads:
     virtual:
@@ -9,3 +9,11 @@ spring:
   datasource:
     tomcat:
       max-active: 20
+
+fipe-api:
+  base-url: https://fipe.parallelum.com.br/api
+  brands-uri: /v2/%s/brands
+  models-uri: /v2/%s/brands/%s/models
+  years-uri: /v2/%s/brands/%s/models/%s/years
+  fipe-information-uri: /v2/%s/brands/%s/models/%s/years/%s
+
