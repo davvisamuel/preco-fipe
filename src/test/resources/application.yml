@@ -2,16 +2,8 @@ spring:
   application:
     name: preco-fipe
 
-  threads:
-    virtual:
-      enabled: true
-
-  datasource:
-    tomcat:
-      max-active: 20
-
 fipe-api:
-  base-url: https://fipe.parallelum.com.br/api
+  base-url: http://localhost:${wiremock.server.port}/api
   brands-uri: /v2/{vehicleType}/brands
   models-uri: /v2/{vehicleType}/brands/{brandId}/models
   years-uri: /v2/{vehicleType}/brands/{brandId}/models/{modelId}/years

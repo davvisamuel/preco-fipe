@@ -24,7 +24,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.brandsUri().formatted(vehicleType))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.brandsUri(), vehicleType)
                 .retrieve()
                 .body(typeReference);
     }
@@ -34,7 +34,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.modelsUri().formatted(vehicleType, brandId))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.modelsUri(), vehicleType, brandId)
                 .retrieve()
                 .body(typeReference);
     }
@@ -44,7 +44,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.yearsUri().formatted(vehicleType, brandId, modelId))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.yearsUri(), vehicleType, brandId, modelId)
                 .retrieve()
                 .body(typeReference);
     }
@@ -53,7 +53,7 @@ public class PrecoFipeService {
 
         return fipeApiClient.build()
                 .get()
-                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.fipeInformationUri().formatted(vehicleType, brandId, modelId, yearId))
+                .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.fipeInformationUri(), vehicleType, brandId, modelId, yearId)
                 .retrieve()
                 .body(FipeInformationResponse.class);
     }
