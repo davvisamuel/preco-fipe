@@ -1,12 +1,12 @@
 package fipe.preco.preco_fipe.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fipe.preco.preco_fipe.config.FipeApiConfiguration;
-import fipe.preco.preco_fipe.response.BrandResponse;
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
-import fipe.preco.preco_fipe.response.ModelResponse;
-import fipe.preco.preco_fipe.response.YearResponse;
+import fipe.preco.preco_fipe.exception.NotFoundException;
+import fipe.preco.preco_fipe.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PrecoFipeService {
-
+    private final ObjectMapper mapper;
     public final RestClient.Builder fipeApiClient;
     public final FipeApiConfiguration fipeApiConfiguration;
 
@@ -26,6 +26,11 @@ public class PrecoFipeService {
                 .get()
                 .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.brandsUri(), vehicleType)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                    var body = new String(response.getBody().readAllBytes());
+                    var fipeErrorResponse = mapper.readValue(body, FipeErrorResponse.class);
+                    throw new NotFoundException(fipeErrorResponse.toString());
+                }))
                 .body(typeReference);
     }
 
@@ -36,6 +41,11 @@ public class PrecoFipeService {
                 .get()
                 .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.modelsUri(), vehicleType, brandId)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                    var body = new String(response.getBody().readAllBytes());
+                    var fipeErrorResponse = mapper.readValue(body, FipeErrorResponse.class);
+                    throw new NotFoundException(fipeErrorResponse.toString());
+                }))
                 .body(typeReference);
     }
 
@@ -46,6 +56,11 @@ public class PrecoFipeService {
                 .get()
                 .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.yearsUri(), vehicleType, brandId, modelId)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                    var body = new String(response.getBody().readAllBytes());
+                    var fipeErrorResponse = mapper.readValue(body, FipeErrorResponse.class);
+                    throw new NotFoundException(fipeErrorResponse.toString());
+                }))
                 .body(typeReference);
     }
 
@@ -55,6 +70,11 @@ public class PrecoFipeService {
                 .get()
                 .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.fipeInformationUri(), vehicleType, brandId, modelId, yearId)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                    var body = new String(response.getBody().readAllBytes());
+                    var fipeErrorResponse = mapper.readValue(body, FipeErrorResponse.class);
+                    throw new NotFoundException(fipeErrorResponse.toString());
+                }))
                 .body(FipeInformationResponse.class);
     }
 }
