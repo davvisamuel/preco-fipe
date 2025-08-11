@@ -57,4 +57,25 @@ class PrecoFipeControllerIT {
                 .body(Matchers.equalTo(expectedResponse))
                 .log().all();
     }
+
+    @Test
+    @DisplayName("retrieveFipeInformation throws a NotFoundException when the vehicle is not found.")
+    @Order(2)
+    void retrieveFipeInformation_ThrowsNotFoundException_WhenVehicleIsNotFound() throws IOException {
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/fipe-information/expected-get-fipe-information-response-404.json");
+
+        var vehicleType = "cars";
+        var brandId = 1;
+        var modelId = 1;
+        var yearId = "9999-1";
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .get(BASE_URL + FIPE_INFORMATION_URI, vehicleType, brandId, modelId, yearId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body(Matchers.equalTo(expectedResponse))
+                .log().all();
+    }
 }

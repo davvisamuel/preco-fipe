@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v2/cars/brands/1/models/1/years/9999-1"
+  },
+  "response": {
+    "status": 404,
+    "bodyFileName": "get-fipe-information-response-404.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
