@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v2/cars/brands/1/models/999/years"
+  },
+  "response": {
+    "status": 404,
+    "bodyFileName": "get-find-all-years-by-model-id-response-404.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

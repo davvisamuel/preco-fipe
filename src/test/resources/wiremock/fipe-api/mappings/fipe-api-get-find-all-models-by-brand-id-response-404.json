@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v2/cars/brands/999/models"
+  },
+  "response": {
+    "status": 404,
+    "bodyFileName": "get-find-all-models-by-brand-id-response-404.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

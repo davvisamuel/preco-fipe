@@ -23,7 +23,7 @@ class PrecoFipeControllerIT {
     private static final String BASE_URL = "v1/api";
     private static final String BRANDS_BY_VEHICLE_TYPE_URI = "/{vehicleType}";
     private static final String MODELS_BY_BRAND_ID_URI = "/{vehicleType}/brands/{brandId}/models";
-    private static final String YEARS_BY_MODEL_ID_URI = "/{vehicleType}/brands/{brandId}/models";
+    private static final String YEARS_BY_MODEL_ID_URI = "/{vehicleType}/brands/{brandId}/models/{modelId}/years";
     private static final String FIPE_INFORMATION_URI = "/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}";
 
     @Autowired
@@ -38,10 +38,106 @@ class PrecoFipeControllerIT {
     }
 
     @Test
-    @DisplayName("retrieveFipeInformation returns the FIPE information when successful.")
+    @DisplayName("findAllBrandsByType returns the full list of brands when successful")
     @Order(1)
+    void findAllBrandsByType_ReturnsAllBrandsList_WhenSuccessful() throws IOException {
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-find-all-brands-by-type-response-200.json");
+
+        var vehicleType = "cars";
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .get(BASE_URL + BRANDS_BY_VEHICLE_TYPE_URI, vehicleType)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(Matchers.equalTo(expectedResponse))
+                .log().all();
+    }
+
+    @Test
+    @DisplayName("findAllModelsByBrandId returns the full list of models when brand is found")
+    @Order(2)
+    void findAllModelsByBrandId_ReturnsAllModelsList_WhenSuccessful() throws IOException {
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-find-all-models-by-brand-id-response-200.json");
+
+        var vehicleType = "cars";
+        var brandId = "1";
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .get(BASE_URL + MODELS_BY_BRAND_ID_URI, vehicleType, brandId)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(Matchers.equalTo(expectedResponse))
+                .log().all();
+    }
+
+    @Test
+    @DisplayName("findAllModelsByBrandId ThrowsNotFoundException when brand is not found")
+    @Order(3)
+    void findAllModelsByBrandId_ThrowsNotFoundException_WhenBrandIsNotFound() throws IOException {
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-find-all-models-by-brand-id-response-404.json");
+
+        var vehicleType = "cars";
+        var brandId = "999";
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .get(BASE_URL + MODELS_BY_BRAND_ID_URI, vehicleType, brandId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body(Matchers.equalTo(expectedResponse))
+                .log().all();
+    }
+
+    @Test
+    @DisplayName("findAllYearsByModelId returns the full list of years when model is found")
+    @Order(4)
+    void findAllYearsByModelId_ReturnsAllYearsList_WhenModelIsFound() throws IOException {
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-find-all-years-by-model-id-response-200.json");
+
+        var vehicleType = "cars";
+        var brandId = "1";
+        var modelId = "1";
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .get(BASE_URL + YEARS_BY_MODEL_ID_URI, vehicleType, brandId, modelId)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body(Matchers.equalTo(expectedResponse))
+                .log().all();
+    }
+
+    @Test
+    @DisplayName("findAllYearsByModelId ThrowsNotFoundException when model is not found")
+    @Order(5)
+    void findAllYearsByModelId_ThrowsNotFoundException_WhenModelIsNotFound() throws IOException {
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-find-all-years-by-model-id-response-404.json");
+
+        var vehicleType = "cars";
+        var brandId = "1";
+        var modelId = "999";
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .get(BASE_URL + YEARS_BY_MODEL_ID_URI, vehicleType, brandId, modelId)
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body(Matchers.equalTo(expectedResponse))
+                .log().all();
+    }
+
+    @Test
+    @DisplayName("retrieveFipeInformation returns the FIPE information when successful")
+    @Order(6)
     void retrieveFipeInformation_ReturnsTheFipeInformation_WhenSuccessful() throws IOException {
-        var expectedResponse = fileUtils.readResourceFile("/fipe-api/fipe-information/expected-get-fipe-information-response-200.json");
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-fipe-information-response-200.json");
 
         var vehicleType = "cars";
         var brandId = 1;
@@ -59,10 +155,10 @@ class PrecoFipeControllerIT {
     }
 
     @Test
-    @DisplayName("retrieveFipeInformation throws a NotFoundException when the vehicle is not found.")
-    @Order(2)
+    @DisplayName("retrieveFipeInformation throws a NotFoundException when the vehicle is not found")
+    @Order(7)
     void retrieveFipeInformation_ThrowsNotFoundException_WhenVehicleIsNotFound() throws IOException {
-        var expectedResponse = fileUtils.readResourceFile("/fipe-api/fipe-information/expected-get-fipe-information-response-404.json");
+        var expectedResponse = fileUtils.readResourceFile("/fipe-api/expected-get-fipe-information-response-404.json");
 
         var vehicleType = "cars";
         var brandId = 1;
