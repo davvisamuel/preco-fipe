@@ -1,14 +1,26 @@
 spring:
+  config:
+    import: optional:classpath:.env[.properties]
   application:
     name: preco-fipe
-
+  datasource:
+    url: jdbc:mysql://localhost:3306/preco_fipe?useTimezone=true&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: ${ENV_MYSQL_ROOT_USER}
+    password: ${ENV_MYSQL_ROOT_PASSWORD}
   threads:
     virtual:
       enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
 
-  datasource:
-    tomcat:
-      max-active: 20
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  tomcat:
+      threads:
+        max: 20
 
 fipe-api:
   base-url: https://fipe.parallelum.com.br/api
