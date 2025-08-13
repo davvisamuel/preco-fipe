@@ -19,7 +19,7 @@ import java.io.IOException;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureWireMock(port = 0, files = "classpath:/wiremock/fipe-api", stubs = "classpath:/wiremock/fipe-api/mappings")
 @Log4j2
-class PrecoFipeControllerIT {
+class FipeApiControllerIT {
     private static final String BASE_URL = "v1/api";
     private static final String BRANDS_BY_VEHICLE_TYPE_URI = "/{vehicleType}";
     private static final String MODELS_BY_BRAND_ID_URI = "/{vehicleType}/brands/{brandId}/models";

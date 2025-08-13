@@ -4,7 +4,7 @@ import fipe.preco.preco_fipe.response.BrandResponse;
 import fipe.preco.preco_fipe.response.FipeInformationResponse;
 import fipe.preco.preco_fipe.response.ModelResponse;
 import fipe.preco.preco_fipe.response.YearResponse;
-import fipe.preco.preco_fipe.service.PrecoFipeService;
+import fipe.preco.preco_fipe.service.FipeApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,19 +17,19 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/api")
 @RequiredArgsConstructor
-public class PrecoFipeController {
+public class FipeApiController {
 
-    private final PrecoFipeService precoFipeService;
+    private final FipeApiService fipeApiService;
 
     @GetMapping("/{vehicleType}")
     public ResponseEntity<List<BrandResponse>> findAllBrandsByType(@PathVariable String vehicleType) {
-        var allBrandsByType = precoFipeService.findAllBrandsByType(vehicleType);
+        var allBrandsByType = fipeApiService.findAllBrandsByType(vehicleType);
         return ResponseEntity.ok(allBrandsByType);
     }
 
     @GetMapping("/{vehicleType}/brands/{brandId}/models")
     public ResponseEntity<List<ModelResponse>> findAllModelsByBrandId(@PathVariable String vehicleType, @PathVariable String brandId) {
-        var allModelsByBrandId = precoFipeService.findAllModelsByBrandId(vehicleType, brandId);
+        var allModelsByBrandId = fipeApiService.findAllModelsByBrandId(vehicleType, brandId);
         return ResponseEntity.ok(allModelsByBrandId);
     }
 
@@ -37,7 +37,7 @@ public class PrecoFipeController {
     public ResponseEntity<List<YearResponse>> findAllYearsByModelId(@PathVariable String vehicleType,
                                                                     @PathVariable String brandId,
                                                                     @PathVariable String modelId) {
-        var allModelsByBrandId = precoFipeService.findAllYearsByModelId(vehicleType, brandId, modelId);
+        var allModelsByBrandId = fipeApiService.findAllYearsByModelId(vehicleType, brandId, modelId);
         return ResponseEntity.ok(allModelsByBrandId);
     }
 
@@ -46,7 +46,7 @@ public class PrecoFipeController {
                                                                            @PathVariable String brandId,
                                                                            @PathVariable String modelId,
                                                                            @PathVariable String yearId) {
-        var allModelsByBrandId = precoFipeService.retrieveFipeInformation(vehicleType, brandId, modelId, yearId);
+        var allModelsByBrandId = fipeApiService.retrieveFipeInformation(vehicleType, brandId, modelId, yearId);
         return ResponseEntity.ok(allModelsByBrandId);
     }
 }

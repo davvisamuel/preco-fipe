@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PrecoFipeService {
+public class FipeApiService {
     private final ObjectMapper mapper;
     public final RestClient.Builder fipeApiClient;
     public final FipeApiConfiguration fipeApiConfiguration;
