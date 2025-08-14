@@ -14,4 +14,9 @@ public class GlobalErrorHandlerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(defaultErrorMessage);
     }
 
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<DefaultErrorMessage> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
+        var defaultErrorMessage = new DefaultErrorMessage(HttpStatus.BAD_REQUEST.value(), e.getReason());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(defaultErrorMessage);
+    }
 }
