@@ -1,7 +1,9 @@
 package fipe.preco.preco_fipe.controller;
 
+import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.mapper.UserMapper;
 import fipe.preco.preco_fipe.request.UserPostRequest;
+import fipe.preco.preco_fipe.request.UserPutRequest;
 import fipe.preco.preco_fipe.response.UserGetResponse;
 import fipe.preco.preco_fipe.response.UserPostResponse;
 import fipe.preco.preco_fipe.service.UserService;
@@ -47,6 +49,15 @@ public class UserController {
         var userPostResponse = mapper.toUserPostResponse(savedUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userPostResponse);
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> update(@RequestBody @Valid UserPutRequest userPutRequest) {
+        var userToUpdate = mapper.toUser(userPutRequest);
+
+        service.update(userToUpdate);
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

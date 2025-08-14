@@ -32,8 +32,32 @@ public class UserService {
         repository.delete(userToDelete);
     }
 
+    public void update(User userToUpdate) {
+        var savedUser = findById(userToUpdate.getId());
+
+        if(userToUpdate.getEmail() == null) {
+            userToUpdate.setEmail(savedUser.getEmail());
+        }
+
+        if(userToUpdate.getPassword() == null) {
+            userToUpdate.setPassword(savedUser.getPassword());
+        }
+
+        assertEmailDoesNotExist(userToUpdate.getEmail(), userToUpdate.getId());
+
+        repository.save(userToUpdate);
+    }
+
+    public void assertUserExist(Integer id) {
+        findById(id);
+    }
+
     public void assertEmailDoesNotExist(String email) {
         repository.findByEmail(email).ifPresent(this::throwEmailAlreadyExistsException);
+    }
+
+    public void assertEmailDoesNotExist(String email, Integer id) {
+        repository.findByEmailAndIdNot(email, id).ifPresent(this::throwEmailAlreadyExistsException);
     }
 
     public void throwEmailAlreadyExistsException(User user) {
