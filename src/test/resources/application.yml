@@ -1,10 +1,11 @@
 spring:
-  application:
-    name: preco-fipe
+  jpa:
+    hibernate:
+      ddl-auto: none
 
-  datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL;DATABASE_TO_LOWER=true
-    username: sa
+  flyway:
+    enabled: true
+    locations: db/migration-test
 
 fipe-api:
   base-url: http://localhost:${wiremock.server.port}/api

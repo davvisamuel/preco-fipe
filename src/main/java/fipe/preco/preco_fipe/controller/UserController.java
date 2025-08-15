@@ -1,6 +1,5 @@
 package fipe.preco.preco_fipe.controller;
 
-import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.mapper.UserMapper;
 import fipe.preco.preco_fipe.request.UserPostRequest;
 import fipe.preco.preco_fipe.request.UserPutRequest;
