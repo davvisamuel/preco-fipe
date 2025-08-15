@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<UserGetResponse> findById(@PathVariable Integer id) {
+    public ResponseEntity<UserGetResponse> findById(@PathVariable Long id) {
         var user = service.findById(id);
 
         var userGetResponse = mapper.toUserGetResponse(user);
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

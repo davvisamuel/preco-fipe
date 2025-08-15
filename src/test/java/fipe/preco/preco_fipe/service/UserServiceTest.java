@@ -111,7 +111,7 @@ class UserServiceTest {
     @DisplayName("findById ThrowsNotFoundException when id is not found")
     @Order(6)
     void findById_ThrowsNotFoundException_WhenIdIsNotFound() {
-        var id = 99;
+        var id = 99L;
 
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.empty());
 
@@ -163,7 +163,7 @@ class UserServiceTest {
     @Order(9)
     void update_ThrowsNotFoundException_WhenIdIsNotFound() {
         var userToUpdate = userUtils.newSavedUser()
-                .withId(99);
+                .withId(99L);
 
         var id = userToUpdate.getId();
 
@@ -181,7 +181,7 @@ class UserServiceTest {
         var savedUser = userUtils.newSavedUser();
 
         var userToUpdate = userUtils.newSavedUser()
-                .withId(2);
+                .withId(2L);
 
         var id = userToUpdate.getId();
 

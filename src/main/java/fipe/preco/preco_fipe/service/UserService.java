@@ -23,11 +23,11 @@ public class UserService {
         return repository.save(user);
     }
 
-    public User findById(Integer id) {
+    public User findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    public void delete(Integer id) {
+    public void delete(Long id) {
         var userToDelete = findById(id);
         repository.delete(userToDelete);
     }
@@ -48,7 +48,7 @@ public class UserService {
         repository.save(userToUpdate);
     }
 
-    public void assertUserExist(Integer id) {
+    public void assertUserExist(Long id) {
         findById(id);
     }
 
@@ -56,7 +56,7 @@ public class UserService {
         repository.findByEmail(email).ifPresent(this::throwEmailAlreadyExistsException);
     }
 
-    public void assertEmailDoesNotExist(String email, Integer id) {
+    public void assertEmailDoesNotExist(String email, Long id) {
         repository.findByEmailAndIdNot(email, id).ifPresent(this::throwEmailAlreadyExistsException);
     }
 

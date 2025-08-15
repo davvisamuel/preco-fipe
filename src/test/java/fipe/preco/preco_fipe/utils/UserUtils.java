@@ -11,21 +11,21 @@ public class UserUtils {
 
     public List<User> newUserList() {
         var user1 = User.builder()
-                .id(1)
+                .id(1L)
                 .email("test1@gmail.com")
                 .password("test1")
                 .roles("USER")
                 .build();
 
         var user2 = User.builder()
-                .id(2)
+                .id(2L)
                 .email("test2@outlook.com")
                 .password("test2")
                 .roles("USER")
                 .build();
 
         var user3 = User.builder()
-                .id(3)
+                .id(3L)
                 .email("test3@gmail.com")
                 .password("test3")
                 .roles("ADMIN")
@@ -43,7 +43,7 @@ public class UserUtils {
 
     public User newSavedUser() {
         return User.builder()
-                .id(1)
+                .id(1L)
                 .email("test1@gmail.com")
                 .password("test1")
                 .roles("USER")
