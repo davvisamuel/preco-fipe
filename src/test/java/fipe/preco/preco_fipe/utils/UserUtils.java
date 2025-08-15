@@ -49,4 +49,12 @@ public class UserUtils {
                 .roles("USER")
                 .build();
     }
+
+    public User newUserToUpdate() {
+        return User.builder()
+                .id(1L)
+                .email("updated@gmail.com")
+                .password("updated")
+                .build();
+    }
 }
