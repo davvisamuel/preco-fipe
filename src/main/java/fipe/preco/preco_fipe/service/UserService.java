@@ -35,6 +35,8 @@ public class UserService {
     public void update(User userToUpdate) {
         var savedUser = findById(userToUpdate.getId());
 
+        userToUpdate.setRoles(savedUser.getRoles());
+
         if(userToUpdate.getEmail() == null) {
             userToUpdate.setEmail(savedUser.getEmail());
         }
