@@ -2,6 +2,7 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
+import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.utils.FileUtils;
 import fipe.preco.preco_fipe.utils.UserUtils;
@@ -20,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = RestAssuredConfiguration.class)
 @Import(TestcontainersConfiguration.class)
@@ -200,5 +203,110 @@ class UserControllerIT {
 
         Assertions.assertThat(updatedUser).isPresent();
         Assertions.assertThat(updatedUser.get()).isEqualTo(userToUpdate);
+    }
+
+    @Test
+    @DisplayName("PUT v1/user Thorws not found 404 when id is not found")
+    @Order(7)
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void update_ThrowsNotFoundException_WhenIdIsNotFound() throws IOException {
+        var request = fileUtils.readResourceFile("/user/put-user-request-404.json");
+
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-request-404.json");
+
+        var response = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .put("v1/user")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .isNotNull()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("PUT v1/user Throw BadRequest 400 when email already exists")
+    @Order(8)
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void update_ThrowEmailAlreadyExists_WhenEmailAlreadyExists() throws IOException {
+        var savedUser = repository.findAll().getFirst();
+
+        var request = fileUtils.readResourceFile("/user/put-user-request-400.json")
+                .replace("1", savedUser.getId().toString());
+
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-response-400.json");
+
+        var response = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .put("v1/user")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .isNotNull()
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @DisplayName("DELETE v1/user removes a user when id is found")
+    @Order(9)
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void delete_RemovesUser_WhenIdIsFound() throws IOException {
+        var userToDelete = repository.findAll().getFirst();
+
+        var id = userToDelete.getId();
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .delete("v1/user/{id}", id)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all();
+
+        var allUsers = repository.findAll();
+
+        Assertions.assertThat(allUsers)
+                .isNotNull()
+                .doesNotContain(userToDelete);
+    }
+
+    @Test
+    @DisplayName("DELETE v1/user throws not found 404 when id is not found")
+    @Order(10)
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void delete_ThrowsNotFoundException_WhenIdIsNotFound() throws IOException {
+        var userToDelete = repository.findAll().getFirst();
+
+        var id = userToDelete.getId();
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .when()
+                .delete("v1/user/{id}", id)
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all();
+
+        var allUsers = repository.findAll();
+
+        Assertions.assertThat(allUsers)
+                .isNotNull()
+                .doesNotContain(userToDelete);
     }
 }
