@@ -2,7 +2,6 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
-import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.utils.FileUtils;
 import fipe.preco.preco_fipe.utils.UserUtils;
@@ -12,6 +11,9 @@ import io.restassured.specification.RequestSpecification;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -21,8 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = RestAssuredConfiguration.class)
 @Import(TestcontainersConfiguration.class)
@@ -206,14 +207,14 @@ class UserControllerIT {
     }
 
     @Test
-    @DisplayName("PUT v1/user Thorws not found 404 when id is not found")
+    @DisplayName("PUT v1/user Throws not found 404 when id is not found")
     @Order(7)
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void update_ThrowsNotFoundException_WhenIdIsNotFound() throws IOException {
         var request = fileUtils.readResourceFile("/user/put-user-request-404.json");
 
-        var expectedResponse = fileUtils.readResourceFile("/user/put-user-request-404.json");
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-response-404.json");
 
         var response = RestAssured.given()
                 .accept(ContentType.JSON)
@@ -222,7 +223,7 @@ class UserControllerIT {
                 .when()
                 .put("v1/user")
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .log().all()
                 .extract().body().asString();
 
@@ -232,7 +233,7 @@ class UserControllerIT {
     }
 
     @Test
-    @DisplayName("PUT v1/user Throw BadRequest 400 when email already exists")
+    @DisplayName("PUT v1/user Throws BadRequest 400 when email already exists")
     @Order(8)
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -265,7 +266,7 @@ class UserControllerIT {
     @Order(9)
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void delete_RemovesUser_WhenIdIsFound() throws IOException {
+    void delete_RemovesUser_WhenIdIsFound() {
         var userToDelete = repository.findAll().getFirst();
 
         var id = userToDelete.getId();
@@ -290,7 +291,7 @@ class UserControllerIT {
     @Order(10)
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void delete_ThrowsNotFoundException_WhenIdIsNotFound() throws IOException {
+    void delete_ThrowsNotFoundException_WhenIdIsNotFound() {
         var userToDelete = repository.findAll().getFirst();
 
         var id = userToDelete.getId();
@@ -308,5 +309,70 @@ class UserControllerIT {
         Assertions.assertThat(allUsers)
                 .isNotNull()
                 .doesNotContain(userToDelete);
+    }
+
+    @ParameterizedTest
+    @MethodSource("providedPostArguments")
+    @DisplayName("POST v1/user throws bad request 400 when invalid fields")
+    @Order(11)
+    void save_ReturnsBadRequest_WhenInvalidFields(String requestPath, String expectedResponsePath) throws IOException {
+        var request = fileUtils.readResourceFile(requestPath);
+
+        var expectedResponse = fileUtils.readResourceFile(expectedResponsePath);
+
+        var response = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("v1/user")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponse);
+    }
+
+    @ParameterizedTest
+    @MethodSource("providedPutArguments")
+    @DisplayName("PUT v1/user throws bad request 400 when invalid fields")
+    @Order(11)
+    void update_ReturnsBadRequest_WhenInvalidFields(String requestPath, String expectedResponsePath) throws IOException {
+        var request = fileUtils.readResourceFile(requestPath);
+
+        var expectedResponse = fileUtils.readResourceFile(expectedResponsePath);
+
+        var response = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .put("v1/user")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponse);
+    }
+
+    private static Stream<Arguments> providedPostArguments() {
+        return Stream.of(
+                Arguments.of("/user/post-user-blank-fields-request-400.json", "/user/post-user-blank-fields-response-400.json"),
+                Arguments.of("/user/post-user-empty-fields-request-400.json", "/user/post-user-empty-fields-response-400.json"),
+                Arguments.of("/user/post-user-null-fields-request-400.json", "/user/post-user-null-fields-response-400.json")
+
+        );
+    }
+
+    private static Stream<Arguments> providedPutArguments() {
+        return Stream.of(
+                Arguments.of("/user/put-user-null-fields-request-400.json", "/user/put-user-null-fields-response-400.json")
+        );
     }
 }
