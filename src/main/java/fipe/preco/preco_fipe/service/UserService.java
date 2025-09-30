@@ -5,6 +5,8 @@ import fipe.preco.preco_fipe.exception.EmailAlreadyExistsException;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserService {
     private final UserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<User> findAll() {
         return repository.findAll();
@@ -20,6 +23,7 @@ public class UserService {
 
     public User save(User user) {
         assertEmailDoesNotExist(user.getEmail());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
 
@@ -27,25 +31,28 @@ public class UserService {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    public void delete(Long id) {
-        var userToDelete = findById(id);
-        repository.delete(userToDelete);
+    public void delete() {
+        var authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        repository.delete(authenticatedUser);
     }
 
     public void update(User userToUpdate) {
-        var savedUser = findById(userToUpdate.getId());
+        var authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        var savedUser = findById(authenticatedUser.getId());
+
+        userToUpdate.setId(authenticatedUser.getId());
 
         userToUpdate.setRoles(savedUser.getRoles());
 
-        if(userToUpdate.getEmail() == null) {
-            userToUpdate.setEmail(savedUser.getEmail());
-        }
+        userToUpdate.setEmail(userToUpdate.getEmail() == null ?
+                savedUser.getEmail() : userToUpdate.getEmail());
 
-        if(userToUpdate.getPassword() == null) {
-            userToUpdate.setPassword(savedUser.getPassword());
-        }
+        userToUpdate.setPassword(userToUpdate.getPassword() == null ?
+                savedUser.getPassword() : passwordEncoder.encode(userToUpdate.getPassword()));
 
-        assertEmailDoesNotExist(userToUpdate.getEmail(), userToUpdate.getId());
+        assertEmailDoesNotExist(userToUpdate.getEmail(), savedUser.getId());
 
         repository.save(userToUpdate);
     }

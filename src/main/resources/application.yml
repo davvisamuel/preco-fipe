@@ -25,10 +25,19 @@ server:
       threads:
         max: 20
 
+logging:
+  level:
+    org.springframework.security: debug
+    fipe.preco.preco_fipe: debug
+
 fipe-api:
   base-url: https://fipe.parallelum.com.br/api
   brands-uri: /v2/{vehicleType}/brands
   models-uri: /v2/{vehicleType}/brands/{brandId}/models
   years-uri: /v2/{vehicleType}/brands/{brandId}/models/{modelId}/years
   fipe-information-uri: /v2/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:preco-fipe-secret}
 

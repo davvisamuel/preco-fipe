@@ -1,2 +1,2 @@
-INSERT INTO preco_fipe.user (email, password, roles) VALUES ('test1@gmail.com', 'test1', 'USER');
-INSERT INTO preco_fipe.user (email, password, roles) VALUES ('test2@gmail.com', 'test2', 'USER');
+INSERT INTO preco_fipe.user (email, password, roles) VALUES ('admin@example.com', '$2a$10$.QYn89MMg6IfX.srSx/KsOVhR/DVtsrifBdmAxzZcZXIh.EeEQMh2', 'ADMIN');
+INSERT INTO preco_fipe.user (email, password, roles) VALUES ('user@example.com', '$2a$10$8HRci4JY.P2CFinQbY/jDuxk2Y.polJn64F7Yp1hGeSf5MtYacLca', 'USER');

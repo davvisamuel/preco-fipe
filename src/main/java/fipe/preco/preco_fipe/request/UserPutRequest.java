@@ -9,11 +9,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserPutRequest {
-    @NotNull(message = "The field 'id' is required")
-    public Integer id;
-
+    @NotBlank(message = "The field 'email' is required")
     @Email(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$", message = "The e-mail is not valid")
     public String email;
 
+    @NotNull(message = "The field 'password' is required")
     public String password;
 }

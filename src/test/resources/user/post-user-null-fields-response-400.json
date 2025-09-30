@@ -1,1 +1,1 @@
-{"timestamp":"2025-08-16T23:48:48.9211725-03:00","status":400,"error":"Bad Request","message":"The field 'email' is required, The field 'password' is required","path":"/v1/user"}
+{"timestamp":"2025-08-16T23:48:48.9211725-03:00","status":400,"error":"Bad Request","message":"The field 'email' is required, The field 'password' is required","path":"/v1/user/register"}

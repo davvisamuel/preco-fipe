@@ -12,6 +12,10 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -25,6 +29,12 @@ class UserServiceTest {
     private UserRepository repository;
     @InjectMocks
     private UserUtils userUtils;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+    @Mock
+    private SecurityContext securityContext;
+    @Mock
+    private Authentication authentication;
 
     @Test
     @DisplayName("findAll returns all users when successful")
@@ -62,7 +72,11 @@ class UserServiceTest {
     void save_CreatesUser_WhenSuccessful() {
         var userToSave = userUtils.newUserToSave();
 
+        var encodedPassword = "$2a$10$QvLzMZj0H3V7Z6p2Zv8F/O3FzXKkF2xY5Hq0jM2FsC3v1P7U7k0lO";
+
         var expectedUserSaved = userUtils.newSavedUser();
+
+        BDDMockito.when(passwordEncoder.encode(userToSave.getPassword())).thenReturn(encodedPassword);
 
         BDDMockito.when(repository.save(userToSave)).thenReturn(expectedUserSaved);
 
@@ -121,78 +135,69 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("delete removes a user when id is found")
+    @DisplayName("delete removes a user when successful")
     @Order(7)
-    void delete_RemovesUser_WhenIdIsFound() {
-        var savedUser = userUtils.newSavedUser();
+    void delete_RemovesUser_WhenSuccessful() {
+        var authenticatedUser = userUtils.newSavedUser();
 
-        var id = savedUser.getId();
+        setSecurityContext(authenticatedUser);
 
-        BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(savedUser));
-
-        BDDMockito.doNothing().when(repository).delete(savedUser);
+        BDDMockito.doNothing().when(repository).delete(authenticatedUser);
 
         Assertions.assertThatNoException()
-                .isThrownBy(() -> service.delete(id));
+                .isThrownBy(() -> service.delete());
     }
 
     @Test
     @DisplayName("update updates a user when id is found")
     @Order(8)
-    void update_UpdatesUser_WhenIdIsFound() {
+    void update_UpdatesUser_WhenSuccessful() {
+        var authenticatedUser = userUtils.newSavedUser();
+
+        setSecurityContext(authenticatedUser);
+
         var savedUser = userUtils.newSavedUser();
 
-        var userToUpdate = savedUser
-                .withEmail("updated@gmail.com")
-                .withPassword("updated");
+        var userToUpdate = userUtils.newUserToUpdate();
 
-        var id = userToUpdate.getId();
+        BDDMockito.when(repository.findById(authenticatedUser.getId())).thenReturn(Optional.of(savedUser));
 
-        var email = userToUpdate.getEmail();
-
-        BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(savedUser));
-
-        BDDMockito.when(repository.findByEmailAndIdNot(email, id)).thenReturn(Optional.empty());
+        BDDMockito.when(repository.findByEmailAndIdNot(userToUpdate.getEmail(), savedUser.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatNoException()
                 .isThrownBy(() -> service.update(userToUpdate));
     }
 
     @Test
-    @DisplayName("update ThrowsNotFoundException when id is not found")
-    @Order(9)
-    void update_ThrowsNotFoundException_WhenIdIsNotFound() {
-        var userToUpdate = userUtils.newSavedUser()
-                .withId(99L);
-
-        var id = userToUpdate.getId();
-
-        BDDMockito.when(repository.findById(id)).thenReturn(Optional.empty());
-
-        Assertions.assertThatException()
-                .isThrownBy(() -> service.update(userToUpdate))
-                .isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
     @DisplayName("update ThrowsEmailAlreadyExistsException when email already exists")
-    @Order(10)
+    @Order(9)
     void update_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyExists() {
+        var authenticatedUser = userUtils.newSavedUser();
+
+        setSecurityContext(authenticatedUser);
+
         var savedUser = userUtils.newSavedUser();
 
-        var userToUpdate = userUtils.newSavedUser()
-                .withId(2L);
+        var userToUpdate = userUtils.newUserToUpdate();
 
-        var id = userToUpdate.getId();
+        var existingUser = userUtils.newUserToUpdate();
 
-        var email = userToUpdate.getEmail();
+        BDDMockito.when(repository.findById(authenticatedUser.getId())).thenReturn(Optional.of(savedUser));
 
-        BDDMockito.when(repository.findById(id)).thenReturn(Optional.of(userToUpdate));
-
-        BDDMockito.when(repository.findByEmailAndIdNot(email, id)).thenReturn(Optional.of(savedUser));
+        BDDMockito.when(repository.findByEmailAndIdNot(userToUpdate.getEmail(), savedUser.getId())).thenReturn(Optional.of(existingUser));
 
         Assertions.assertThatException()
                 .isThrownBy(() -> service.update(userToUpdate))
                 .isInstanceOf(EmailAlreadyExistsException.class);
+    }
+
+    public void setSecurityContext(User authenticatedUser) {
+        SecurityContextHolder.setContext(securityContext);
+
+        BDDMockito.when(securityContext.getAuthentication())
+                .thenReturn(authentication);
+
+        BDDMockito.when(authentication.getPrincipal())
+                .thenReturn(authenticatedUser);
     }
 }

@@ -1,6 +1,7 @@
 package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
+import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
 import fipe.preco.preco_fipe.utils.FileUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -11,7 +12,9 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 
@@ -19,6 +22,8 @@ import java.io.IOException;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureWireMock(port = 0, files = "classpath:/wiremock/fipe-api", stubs = "classpath:/wiremock/fipe-api/mappings")
 @Log4j2
+@Import(TestcontainersConfiguration.class)
+@ActiveProfiles("itest")
 class FipeApiControllerIT {
     private static final String BASE_URL = "v1/api";
     private static final String BRANDS_BY_VEHICLE_TYPE_URI = "/{vehicleType}";

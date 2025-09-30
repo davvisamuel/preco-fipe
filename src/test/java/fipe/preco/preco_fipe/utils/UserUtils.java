@@ -1,5 +1,6 @@
 package fipe.preco.preco_fipe.utils;
 
+import fipe.preco.preco_fipe.domain.Role;
 import fipe.preco.preco_fipe.domain.User;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +29,7 @@ public class UserUtils {
                 .id(3L)
                 .email("test3@gmail.com")
                 .password("test3")
-                .roles("ADMIN")
+                .roles("USER")
                 .build();
 
         return new ArrayList<>(List.of(user1, user2, user3));
@@ -45,14 +46,13 @@ public class UserUtils {
         return User.builder()
                 .id(1L)
                 .email("test1@gmail.com")
-                .password("test1")
+                .password("$2a$10$QvLzMZj0H3V7Z6p2Zv8F/O3FzXKkF2xY5Hq0jM2FsC3v1P7U7k0lO")
                 .roles("USER")
                 .build();
     }
 
     public User newUserToUpdate() {
         return User.builder()
-                .id(1L)
                 .email("updated@gmail.com")
                 .password("updated")
                 .build();
