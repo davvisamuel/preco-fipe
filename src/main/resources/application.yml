@@ -22,8 +22,8 @@ server:
   servlet:
     context-path: /
   tomcat:
-      threads:
-        max: 20
+    threads:
+      max: 20
 
 logging:
   level:

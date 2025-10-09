@@ -27,7 +27,7 @@ public class UserService {
         return repository.save(user);
     }
 
-    public User findById(Long id) {
+    public User findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
@@ -57,7 +57,7 @@ public class UserService {
         repository.save(userToUpdate);
     }
 
-    public void assertUserExist(Long id) {
+    public void assertUserExist(Integer id) {
         findById(id);
     }
 
@@ -65,7 +65,7 @@ public class UserService {
         repository.findByEmail(email).ifPresent(this::throwEmailAlreadyExistsException);
     }
 
-    public void assertEmailDoesNotExist(String email, Long id) {
+    public void assertEmailDoesNotExist(String email, Integer id) {
         repository.findByEmailAndIdNot(email, id).ifPresent(this::throwEmailAlreadyExistsException);
     }
 

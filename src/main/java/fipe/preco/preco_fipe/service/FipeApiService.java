@@ -7,6 +7,8 @@ import fipe.preco.preco_fipe.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -18,6 +20,7 @@ public class FipeApiService {
     private final ObjectMapper mapper;
     public final RestClient.Builder fipeApiClient;
     public final FipeApiConfiguration fipeApiConfiguration;
+    public final HistoryService historyService;
 
     public List<BrandResponse> findAllBrandsByType(String vehicleType) {
         var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {};
@@ -66,7 +69,7 @@ public class FipeApiService {
 
     public FipeInformationResponse retrieveFipeInformation(String vehicleType, String brandId, String modelId, String yearId) {
 
-        return fipeApiClient.build()
+        var fipeInformationResponse = fipeApiClient.build()
                 .get()
                 .uri(fipeApiConfiguration.baseUrl() + fipeApiConfiguration.fipeInformationUri(), vehicleType, brandId, modelId, yearId)
                 .retrieve()
@@ -76,5 +79,19 @@ public class FipeApiService {
                     throw new NotFoundException(fipeErrorResponse.toString());
                 }))
                 .body(FipeInformationResponse.class);
+
+        saveIfAuthenticated(fipeInformationResponse);
+
+        return fipeInformationResponse;
+    }
+
+    public void saveIfAuthenticated(FipeInformationResponse fipeInformationResponse) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("USER"))) {
+            return;
+        }
+
+        historyService.saveConsultation(authentication, fipeInformationResponse);
     }
 }

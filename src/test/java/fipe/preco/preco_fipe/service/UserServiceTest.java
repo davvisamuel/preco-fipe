@@ -125,7 +125,7 @@ class UserServiceTest {
     @DisplayName("findById ThrowsNotFoundException when id is not found")
     @Order(6)
     void findById_ThrowsNotFoundException_WhenIdIsNotFound() {
-        var id = 99L;
+        var id = 99;
 
         BDDMockito.when(repository.findById(id)).thenReturn(Optional.empty());
 

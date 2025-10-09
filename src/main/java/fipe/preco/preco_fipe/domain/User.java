@@ -18,10 +18,11 @@ import java.util.List;
 @ToString
 @With
 @EqualsAndHashCode
+@Table(name = "user")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)

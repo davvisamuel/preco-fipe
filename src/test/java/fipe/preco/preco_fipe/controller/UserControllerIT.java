@@ -61,7 +61,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAll_ReturnsAllUsers_WhenSuccessful() throws IOException {
-        var adminToken = login("/auth/post-auth-admin-request-200.json");
+        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
 
         var expectedResponse = fileUtils.readResourceFile("/user/get-user-response-200.json");
 
@@ -93,7 +93,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findById_ReturnsUser_WhenIdIsFound() throws IOException {
-        var adminToken = login("/auth/post-auth-admin-request-200.json");
+        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
 
         var expectedResponse = fileUtils.readResourceFile("/user/get-user-by-id-response-200.json");
 
@@ -125,7 +125,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findById_ThrowsNotFoundException_WhenIdIsNotFound() throws IOException {
-        var adminToken = login("/auth/post-auth-admin-request-200.json");
+        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
 
         var expectedResponse = fileUtils.readResourceFile("/user/get-user-by-id-response-404.json");
 
@@ -179,11 +179,11 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void update_UpdatesUser_WhenIdIsFound() throws IOException {
-        var userToken = login("/auth/post-auth-user-request-200.json");
+        var userToken = userUtils.login("/auth/post-auth-user-request-200.json");
 
         var id = tokenService.validateLogin(userToken);
 
-        var savedUser = repository.findById(Long.valueOf(id));
+        var savedUser = repository.findById(Integer.valueOf(id));
 
         var request = fileUtils.readResourceFile("/user/put-user-request-200.json");
 
@@ -198,7 +198,7 @@ class UserControllerIT {
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .log().all();
 
-        var updatedUser = repository.findById(Long.valueOf(id));
+        var updatedUser = repository.findById(Integer.valueOf(id));
 
         Assertions.assertThat(updatedUser).isPresent();
 
@@ -211,7 +211,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void update_ThrowEmailAlreadyExists_WhenEmailAlreadyExists() throws IOException {
-        var userToken = login("/auth/post-auth-user-request-200.json");
+        var userToken = userUtils.login("/auth/post-auth-user-request-200.json");
 
         var id = tokenService.validateLogin(userToken);
 
@@ -242,11 +242,11 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void delete_RemovesUser_WhenIdIsFound() throws IOException {
-        var userToken = login("/auth/post-auth-user-request-200.json");
+        var userToken = userUtils.login("/auth/post-auth-user-request-200.json");
 
         var id = tokenService.validateLogin(userToken);
 
-        var userToDelete = repository.findById(Long.valueOf(id));
+        var userToDelete = repository.findById(Integer.valueOf(id));
 
         RestAssured.given()
                 .accept(ContentType.JSON)
@@ -298,19 +298,5 @@ class UserControllerIT {
                 Arguments.of("/user/post-user-null-fields-request-400.json", "/user/post-user-null-fields-response-400.json")
 
         );
-    }
-
-    private String login(String filePathRequest) throws IOException {
-        var request = fileUtils.readResourceFile(filePathRequest);
-
-        return RestAssured.given()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/v1/auth/login")
-                .then()
-                .extract()
-                .path("token");
     }
 }

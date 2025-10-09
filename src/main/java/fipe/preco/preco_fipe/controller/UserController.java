@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserGetResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<UserGetResponse> findById(@PathVariable Integer id) {
         var user = service.findById(id);
 
         var userGetResponse = mapper.toUserGetResponse(user);

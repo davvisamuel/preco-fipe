@@ -29,7 +29,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         if (token.isPresent()) {
             var id = tokenService.validateLogin(token.get());
-            var user = userRepository.findById(Long.valueOf(id)).get();
+            var user = userRepository.findById(Integer.valueOf(id)).get();
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

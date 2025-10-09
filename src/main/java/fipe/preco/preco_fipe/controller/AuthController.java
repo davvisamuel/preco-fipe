@@ -6,7 +6,6 @@ import fipe.preco.preco_fipe.response.LoginPostResponse;
 import fipe.preco.preco_fipe.security.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
