@@ -1,0 +1,6 @@
+package fipe.preco.preco_fipe.response;
+
+import fipe.preco.preco_fipe.domain.VehicleData;
+
+public record FavoriteGetResponse(VehicleData vehicleData) {
+}

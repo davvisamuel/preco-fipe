@@ -1,6 +1,5 @@
 package fipe.preco.preco_fipe.service;
 
-import fipe.preco.preco_fipe.domain.Consultation;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.domain.VehicleData;
 import fipe.preco.preco_fipe.exception.NotFoundException;
@@ -13,7 +12,6 @@ import fipe.preco.preco_fipe.repository.VehicleTypeRepository;
 import fipe.preco.preco_fipe.response.FipeInformationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,28 +28,26 @@ public class HistoryService {
     private final VehicleTypeRepository vehicleTypeRepository;
 
     public VehicleData saveVehicleData(FipeInformationResponse fipeInformationResponse) {
-        var vehicleDataOptional = vehicleDataRepository.findByCodeFipe(fipeInformationResponse.codeFipe());
+        var codeFipe = fipeInformationResponse.codeFipe();
+
+        var vehicleDataOptional = vehicleDataRepository.findByCodeFipe(codeFipe);
 
         if (vehicleDataOptional.isPresent()) {
             return vehicleDataOptional.get();
         }
 
-        var vehicleData = vehicleDataMapper.toVehicleData(fipeInformationResponse);
-
         var fuel = fuelRepository.findByFuelAcronym(fipeInformationResponse.fuelAcronym()).orElseThrow(() -> new NotFoundException("Vehicle type not found"));
         var vehicleType = vehicleTypeRepository.findById(Integer.parseInt(fipeInformationResponse.vehicleType())).orElseThrow(() -> new NotFoundException("Vehicle type not found"));
-        vehicleData.setFuel(fuel);
-        vehicleData.setVehicleType(vehicleType);
+
+        var vehicleData = vehicleDataMapper.toVehicleData(fipeInformationResponse, fuel, vehicleType);
 
         return vehicleDataRepository.save(vehicleData);
     }
 
-    public void saveConsultation(Authentication authentication, FipeInformationResponse fipeInformationResponse) {
+    public void saveConsultation(User user, FipeInformationResponse fipeInformationResponse) {
         var vehicleData = saveVehicleData(fipeInformationResponse);
 
-        var userAuthenticated = (User) authentication.getPrincipal();
-
-        var consultation = consultationMapper.toConsultation(userAuthenticated, vehicleData, fipeInformationResponse);
+        var consultation = consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse);
 
         consultationRepository.save(consultation);
     }

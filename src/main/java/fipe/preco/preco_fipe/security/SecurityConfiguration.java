@@ -32,6 +32,7 @@ public class SecurityConfiguration {
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/v1/user").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/v1/user").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.POST, "/v1/favorite").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET).hasAuthority("ADMIN")
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)

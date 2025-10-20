@@ -1,6 +1,6 @@
 package fipe.preco.preco_fipe.utils;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FileUtils {
     private final ResourceLoader resourceLoader;
 

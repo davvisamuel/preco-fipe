@@ -1,0 +1,7 @@
+{
+  "timestamp": "2025-10-14T15:09:51.409562-03:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "The field 'codeFipe' is required",
+  "path": "/v1/favorite"
+}

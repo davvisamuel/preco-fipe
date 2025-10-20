@@ -2,13 +2,12 @@ package fipe.preco.preco_fipe.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fipe.preco.preco_fipe.config.FipeApiConfiguration;
+import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -67,7 +66,7 @@ public class FipeApiService {
                 .body(typeReference);
     }
 
-    public FipeInformationResponse retrieveFipeInformation(String vehicleType, String brandId, String modelId, String yearId) {
+    public FipeInformationResponse retrieveFipeInformation(User user, String vehicleType, String brandId, String modelId, String yearId) {
 
         var fipeInformationResponse = fipeApiClient.build()
                 .get()
@@ -80,18 +79,17 @@ public class FipeApiService {
                 }))
                 .body(FipeInformationResponse.class);
 
-        saveIfAuthenticated(fipeInformationResponse);
+        saveIfAuthenticated(user, fipeInformationResponse);
 
         return fipeInformationResponse;
     }
 
-    public void saveIfAuthenticated(FipeInformationResponse fipeInformationResponse) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+    public void saveIfAuthenticated(User user, FipeInformationResponse fipeInformationResponse) {
 
-        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority("USER"))) {
+        if (user == null) {
             return;
         }
 
-        historyService.saveConsultation(authentication, fipeInformationResponse);
+        historyService.saveConsultation(user, fipeInformationResponse);
     }
 }

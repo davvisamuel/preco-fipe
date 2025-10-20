@@ -32,8 +32,6 @@ public class AuthController {
 
         var auth = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        log.debug(auth.getPrincipal());
-
         var token = tokenService.generationToken((User) auth.getPrincipal());
 
         var loginPostResponse = LoginPostResponse.builder()
