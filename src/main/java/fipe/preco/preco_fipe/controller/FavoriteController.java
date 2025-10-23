@@ -1,6 +1,5 @@
 package fipe.preco.preco_fipe.controller;
 
-import fipe.preco.preco_fipe.domain.Favorite;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.mapper.FavoriteMapper;
 import fipe.preco.preco_fipe.request.FavoritePostRequest;
@@ -50,7 +49,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user, Integer id) {
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal User user, @PathVariable Integer id) {
         log.debug("request received for delete favorite");
 
         favoriteService.delete(user, id);

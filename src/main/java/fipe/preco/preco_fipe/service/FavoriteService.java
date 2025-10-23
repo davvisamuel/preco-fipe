@@ -5,8 +5,6 @@ import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.mapper.FavoriteMapper;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
-import fipe.preco.preco_fipe.repository.VehicleDataRepository;
-import fipe.preco.preco_fipe.response.FavoritePostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,12 +18,10 @@ public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
     private final FavoriteMapper favoriteMapper;
-    private final VehicleDataRepository vehicleDataRepository;
+    private final VehicleDataService vehicleDataService;
 
     public Favorite save(User user, String codeFipe) {
-        var vehicleData = vehicleDataRepository
-                .findByCodeFipe(codeFipe)
-                .orElseThrow(() -> new NotFoundException("Vehicle data not found"));
+        var vehicleData = vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe);
 
         var favorite = favoriteMapper.toFavorite(user, vehicleData);
 

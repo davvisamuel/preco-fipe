@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "vehicle_data")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +31,5 @@ public class VehicleData {
     @Column(nullable = false)
     private String modelYear;
 
-    @OneToOne(optional = false)
-    private VehicleType vehicleType;
+    private String vehicleType;
 }

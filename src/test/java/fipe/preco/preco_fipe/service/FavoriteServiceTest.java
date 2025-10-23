@@ -1,6 +1,5 @@
 package fipe.preco.preco_fipe.service;
 
-import fipe.preco.preco_fipe.domain.Favorite;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.mapper.FavoriteMapper;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
@@ -91,7 +90,7 @@ class FavoriteServiceTest {
     void findAllPaginated_ReturnsPageOfFavorites_WhenSuccessful() {
         var savedUser = userUtils.newSavedUser();
 
-        var vehicleData= vehicleDataUtils.newVehicleData();
+        var vehicleData = vehicleDataUtils.newVehicleData();
 
         var pageable = Pageable.unpaged();
 

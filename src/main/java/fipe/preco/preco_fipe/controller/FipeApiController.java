@@ -9,10 +9,7 @@ import fipe.preco.preco_fipe.service.FipeApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,8 +45,9 @@ public class FipeApiController {
                                                                            @PathVariable String vehicleType,
                                                                            @PathVariable String brandId,
                                                                            @PathVariable String modelId,
-                                                                           @PathVariable String yearId) {
-        var allModelsByBrandId = fipeApiService.retrieveFipeInformation(user, vehicleType, brandId, modelId, yearId);
+                                                                           @PathVariable String yearId,
+                                                                           @RequestParam Integer comparisonId) {
+        var allModelsByBrandId = fipeApiService.retrieveFipeInformation(user, comparisonId, vehicleType, brandId, modelId, yearId);
         return ResponseEntity.ok(allModelsByBrandId);
     }
 }

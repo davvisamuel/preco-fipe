@@ -7,7 +7,7 @@ services:
       MYSQL_USER: ${ENV_MYSQL_USER}
       MYSQL_PASSWORD: ${ENV_MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3307:3307"
     volumes:
       - db-volume:/var/lib/mysql
 

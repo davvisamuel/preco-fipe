@@ -2,7 +2,6 @@ package fipe.preco.preco_fipe.utils;
 
 import fipe.preco.preco_fipe.domain.Fuel;
 import fipe.preco.preco_fipe.domain.VehicleData;
-import fipe.preco.preco_fipe.domain.VehicleType;
 import fipe.preco.preco_fipe.response.FipeInformationResponse;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 public class HistoryUtils {
 
     public FipeInformationResponse newFipeInformationResponse() {
-
         return FipeInformationResponse.builder()
                 .brand("Acura")
                 .codeFipe("038003-2")
@@ -19,7 +17,7 @@ public class HistoryUtils {
                 .model("Integra GS 1.8")
                 .modelYear("1992")
                 .referenceMonth("outubro de 2025")
-                .vehicleType("1")
+                .vehicleType(1)
                 .price("R$ 11.007,00")
                 .build();
     }
@@ -32,18 +30,9 @@ public class HistoryUtils {
                 .build();
     }
 
-    public VehicleType newVehicleType() {
-        return VehicleType.builder()
-                .id(1)
-                .typeName("Carro")
-                .build();
-    }
 
     public VehicleData newVehicleData() {
-
         var fuel = newFuel();
-
-        var vehicleType = newVehicleType();
 
         return VehicleData.builder()
                 .id(1)
@@ -52,7 +41,7 @@ public class HistoryUtils {
                 .brand("Acura")
                 .model("Integra GS 1.8")
                 .modelYear("1992")
-                .vehicleType(vehicleType)
+                .vehicleType("Carro")
                 .build();
     }
 }

@@ -1,22 +1,27 @@
 package fipe.preco.preco_fipe.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.*;
+import java.util.Optional;
 
-@Entity
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class VehicleType {
+public enum VehicleType {
+    CARRO(1, "Carro"),
+    MOTO(2, "Moto"),
+    CAMINHAO(3, "Caminhão");
 
-    @Id
-    private Integer id;
+    final int vehicleType;
+    final String vehicleTypeName;
 
-    @Column(nullable = false)
-    private String typeName;
+    VehicleType(int vehicleType, String vehicleTypeName) {
+        this.vehicleType = vehicleType;
+        this.vehicleTypeName = vehicleTypeName;
+    }
+
+    public static Optional<String> getVehicleTypeById(int vehicleType) {
+        for (VehicleType value : values()) {
+            if (value.vehicleType == vehicleType) {
+                return Optional.of(value.vehicleTypeName);
+            }
+        }
+        return Optional.empty();
+    }
 
 }

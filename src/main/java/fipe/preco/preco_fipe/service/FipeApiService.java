@@ -19,7 +19,7 @@ public class FipeApiService {
     private final ObjectMapper mapper;
     public final RestClient.Builder fipeApiClient;
     public final FipeApiConfiguration fipeApiConfiguration;
-    public final HistoryService historyService;
+    public final ConsultationService consultationService;
 
     public List<BrandResponse> findAllBrandsByType(String vehicleType) {
         var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {};
@@ -66,7 +66,7 @@ public class FipeApiService {
                 .body(typeReference);
     }
 
-    public FipeInformationResponse retrieveFipeInformation(User user, String vehicleType, String brandId, String modelId, String yearId) {
+    public FipeInformationResponse retrieveFipeInformation(User user, Integer comparisonId, String vehicleType, String brandId, String modelId, String yearId) {
 
         var fipeInformationResponse = fipeApiClient.build()
                 .get()
@@ -79,17 +79,17 @@ public class FipeApiService {
                 }))
                 .body(FipeInformationResponse.class);
 
-        saveIfAuthenticated(user, fipeInformationResponse);
+        saveIfAuthenticated(user, comparisonId, fipeInformationResponse);
 
         return fipeInformationResponse;
     }
 
-    public void saveIfAuthenticated(User user, FipeInformationResponse fipeInformationResponse) {
+    public void saveIfAuthenticated(User user, Integer comparisonId , FipeInformationResponse fipeInformationResponse) {
 
         if (user == null) {
             return;
         }
 
-        historyService.saveConsultation(user, fipeInformationResponse);
+        consultationService.saveConsultation(user, comparisonId, fipeInformationResponse);
     }
 }

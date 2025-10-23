@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "consultation")
 @Getter
 @Setter
 @Builder
@@ -28,4 +29,8 @@ public class Consultation {
 
     @Column(nullable = false)
     private String referenceMonth;
+
+    @ManyToOne
+    @JoinColumn(name = "comparison_id")
+    private Comparison comparison;
 }
