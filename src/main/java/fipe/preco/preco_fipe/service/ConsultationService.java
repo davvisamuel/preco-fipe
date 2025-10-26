@@ -1,5 +1,6 @@
 package fipe.preco.preco_fipe.service;
 
+import fipe.preco.preco_fipe.domain.Comparison;
 import fipe.preco.preco_fipe.domain.Consultation;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.exception.NotFoundException;
@@ -35,9 +36,14 @@ public class ConsultationService {
     public void saveConsultation(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
         var vehicleData = vehicleDataService.saveVehicleData(fipeInformationResponse);
 
-        var comparison = comparisonService.findByIdAndUser(comparisonId, user);
+        Comparison comparison = null;
 
-        var consultation = consultationMapper.toConsultation(user, comparison, vehicleData, fipeInformationResponse);
+        if (comparisonId != null) {
+            comparison = comparisonService.findByIdAndUser(comparisonId, user);
+        }
+
+        var consultation = consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse);
+        consultation.setComparison(comparison);
 
         consultationRepository.save(consultation);
     }

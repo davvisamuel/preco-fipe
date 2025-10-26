@@ -1,6 +1,5 @@
 package fipe.preco.preco_fipe.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +27,7 @@ public class Comparison {
     @Column(insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "comparison", fetch = FetchType.LAZY)
+    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "comparison", fetch = FetchType.EAGER)
     private Set<Consultation> consultations = new HashSet<>();
 }

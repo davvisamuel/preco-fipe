@@ -46,7 +46,7 @@ public class FipeApiController {
                                                                            @PathVariable String brandId,
                                                                            @PathVariable String modelId,
                                                                            @PathVariable String yearId,
-                                                                           @RequestParam Integer comparisonId) {
+                                                                           @RequestParam(required = false) Integer comparisonId) {
         var allModelsByBrandId = fipeApiService.retrieveFipeInformation(user, comparisonId, vehicleType, brandId, modelId, yearId);
         return ResponseEntity.ok(allModelsByBrandId);
     }

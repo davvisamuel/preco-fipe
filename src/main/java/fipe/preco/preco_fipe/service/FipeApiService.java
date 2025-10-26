@@ -1,9 +1,11 @@
 package fipe.preco.preco_fipe.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fipe.preco.preco_fipe.config.FipeApiConfiguration;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.exception.NotFoundException;
+import fipe.preco.preco_fipe.producer.ConsultationProducer;
 import fipe.preco.preco_fipe.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,7 +21,7 @@ public class FipeApiService {
     private final ObjectMapper mapper;
     public final RestClient.Builder fipeApiClient;
     public final FipeApiConfiguration fipeApiConfiguration;
-    public final ConsultationService consultationService;
+    public final ConsultationProducer consultationProducer;
 
     public List<BrandResponse> findAllBrandsByType(String vehicleType) {
         var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {};
@@ -84,12 +86,16 @@ public class FipeApiService {
         return fipeInformationResponse;
     }
 
-    public void saveIfAuthenticated(User user, Integer comparisonId , FipeInformationResponse fipeInformationResponse) {
+    public void saveIfAuthenticated(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
 
         if (user == null) {
             return;
         }
 
-        consultationService.saveConsultation(user, comparisonId, fipeInformationResponse);
+        try {
+            consultationProducer.send(user.getId(), comparisonId, fipeInformationResponse);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erro ao serializar mensagem para o RabbitMQ", e);
+        }
     }
 }
