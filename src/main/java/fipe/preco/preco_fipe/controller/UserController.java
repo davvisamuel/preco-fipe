@@ -1,10 +1,10 @@
 package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.mapper.UserMapper;
-import fipe.preco.preco_fipe.request.UserPostRequest;
-import fipe.preco.preco_fipe.request.UserPutRequest;
-import fipe.preco.preco_fipe.response.UserGetResponse;
-import fipe.preco.preco_fipe.response.UserPostResponse;
+import fipe.preco.preco_fipe.dto.request.UserPostRequest;
+import fipe.preco.preco_fipe.dto.request.UserPutRequest;
+import fipe.preco.preco_fipe.dto.response.UserGetResponse;
+import fipe.preco.preco_fipe.dto.response.UserPostResponse;
 import fipe.preco.preco_fipe.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

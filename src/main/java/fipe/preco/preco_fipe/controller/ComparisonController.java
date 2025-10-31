@@ -2,8 +2,8 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.mapper.ComparisonMapper;
-import fipe.preco.preco_fipe.response.ComparisonGetResponse;
-import fipe.preco.preco_fipe.response.ComparisonPostResponse;
+import fipe.preco.preco_fipe.dto.response.ComparisonGetResponse;
+import fipe.preco.preco_fipe.dto.response.ComparisonPostResponse;
 import fipe.preco.preco_fipe.service.ComparisonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

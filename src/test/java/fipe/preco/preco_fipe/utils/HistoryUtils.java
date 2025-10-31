@@ -2,7 +2,7 @@ package fipe.preco.preco_fipe.utils;
 
 import fipe.preco.preco_fipe.domain.Fuel;
 import fipe.preco.preco_fipe.domain.VehicleData;
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import org.springframework.stereotype.Component;
 
 @Component

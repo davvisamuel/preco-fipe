@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fipe.preco.preco_fipe.config.FipeApiConfiguration;
 import fipe.preco.preco_fipe.domain.User;
+import fipe.preco.preco_fipe.dto.response.*;
+import fipe.preco.preco_fipe.exception.ComparisonLimitExceededException;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.producer.ConsultationProducer;
-import fipe.preco.preco_fipe.response.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -22,6 +23,7 @@ public class FipeApiService {
     public final RestClient.Builder fipeApiClient;
     public final FipeApiConfiguration fipeApiConfiguration;
     public final ConsultationProducer consultationProducer;
+    public final ComparisonService comparisonService;
 
     public List<BrandResponse> findAllBrandsByType(String vehicleType) {
         var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {};
@@ -90,6 +92,12 @@ public class FipeApiService {
 
         if (user == null) {
             return;
+        }
+
+        var comparison = comparisonService.findByIdAndUser(comparisonId, user);
+
+        if(comparison.getConsultations().size() >= 3) {
+            throw new ComparisonLimitExceededException("A comparação já atingiu o limite de 3 consultas.");
         }
 
         try {

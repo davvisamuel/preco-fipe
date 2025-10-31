@@ -2,7 +2,7 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.mapper.ConsultationMapper;
-import fipe.preco.preco_fipe.response.ConsultationGetResponse;
+import fipe.preco.preco_fipe.dto.response.ConsultationGetResponse;
 import fipe.preco.preco_fipe.service.ConsultationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

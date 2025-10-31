@@ -2,7 +2,7 @@ package fipe.preco.preco_fipe.mapper;
 
 import fipe.preco.preco_fipe.domain.Fuel;
 import fipe.preco.preco_fipe.domain.VehicleData;
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

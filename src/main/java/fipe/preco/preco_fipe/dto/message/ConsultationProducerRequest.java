@@ -1,6 +1,6 @@
-package fipe.preco.preco_fipe.request;
+package fipe.preco.preco_fipe.dto.message;
 
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 
 public record ConsultationProducerRequest(Integer userId, Integer comparisonId,
                                           FipeInformationResponse fipeInformationResponse) {

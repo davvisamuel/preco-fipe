@@ -27,7 +27,6 @@ public class Comparison {
     @Column(insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    //@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "comparison", fetch = FetchType.EAGER)
     private Set<Consultation> consultations = new HashSet<>();
 }

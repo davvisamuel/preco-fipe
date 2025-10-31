@@ -2,9 +2,9 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.mapper.FavoriteMapper;
-import fipe.preco.preco_fipe.request.FavoritePostRequest;
-import fipe.preco.preco_fipe.response.FavoriteGetResponse;
-import fipe.preco.preco_fipe.response.FavoritePostResponse;
+import fipe.preco.preco_fipe.dto.request.FavoritePostRequest;
+import fipe.preco.preco_fipe.dto.response.FavoriteGetResponse;
+import fipe.preco.preco_fipe.dto.response.FavoritePostResponse;
 import fipe.preco.preco_fipe.service.FavoriteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

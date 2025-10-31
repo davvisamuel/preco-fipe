@@ -1,10 +1,10 @@
 package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
-import fipe.preco.preco_fipe.response.BrandResponse;
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
-import fipe.preco.preco_fipe.response.ModelResponse;
-import fipe.preco.preco_fipe.response.YearResponse;
+import fipe.preco.preco_fipe.dto.response.BrandResponse;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.dto.response.ModelResponse;
+import fipe.preco.preco_fipe.dto.response.YearResponse;
 import fipe.preco.preco_fipe.service.FipeApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

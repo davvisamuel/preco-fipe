@@ -1,7 +1,7 @@
 package fipe.preco.preco_fipe.mapper;
 
-import fipe.preco.preco_fipe.request.ConsultationProducerRequest;
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.dto.message.ConsultationProducerRequest;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 

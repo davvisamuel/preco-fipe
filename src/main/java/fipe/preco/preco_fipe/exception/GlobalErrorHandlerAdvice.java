@@ -49,4 +49,10 @@ public class GlobalErrorHandlerAdvice {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
+
+    @ExceptionHandler(ComparisonLimitExceededException.class)
+    public ResponseEntity<DefaultErrorMessage> handleComparisonLimitExceededException (ComparisonLimitExceededException e) {
+        var defaultErrorMessage = new DefaultErrorMessage(e.getStatusCode().value(), e.getReason());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(defaultErrorMessage);
+    }
 }

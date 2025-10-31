@@ -1,10 +1,10 @@
 package fipe.preco.preco_fipe.mapper;
 
 import fipe.preco.preco_fipe.domain.User;
-import fipe.preco.preco_fipe.request.UserPostRequest;
-import fipe.preco.preco_fipe.request.UserPutRequest;
-import fipe.preco.preco_fipe.response.UserGetResponse;
-import fipe.preco.preco_fipe.response.UserPostResponse;
+import fipe.preco.preco_fipe.dto.request.UserPostRequest;
+import fipe.preco.preco_fipe.dto.request.UserPutRequest;
+import fipe.preco.preco_fipe.dto.response.UserGetResponse;
+import fipe.preco.preco_fipe.dto.response.UserPostResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

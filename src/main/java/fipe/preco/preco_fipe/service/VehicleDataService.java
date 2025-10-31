@@ -5,7 +5,7 @@ import fipe.preco.preco_fipe.domain.VehicleType;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.mapper.VehicleDataMapper;
 import fipe.preco.preco_fipe.repository.VehicleDataRepository;
-import fipe.preco.preco_fipe.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

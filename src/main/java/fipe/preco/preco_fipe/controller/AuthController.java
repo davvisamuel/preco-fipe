@@ -1,8 +1,8 @@
 package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
-import fipe.preco.preco_fipe.request.LoginPostRequest;
-import fipe.preco.preco_fipe.response.LoginPostResponse;
+import fipe.preco.preco_fipe.dto.request.LoginPostRequest;
+import fipe.preco.preco_fipe.dto.response.LoginPostResponse;
 import fipe.preco.preco_fipe.security.TokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

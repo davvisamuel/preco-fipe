@@ -13,7 +13,7 @@ services:
       - db-volume:/var/lib/mysql
 
   rabbitmq:
-    container_name: rabbitmq
+    container_name: rabbitmq2
     image: rabbitmq:4.1.4-management
     ports:
       - "5672:5672"

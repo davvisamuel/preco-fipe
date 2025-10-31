@@ -1,4 +1,4 @@
-package fipe.preco.preco_fipe.request;
+package fipe.preco.preco_fipe.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -2,8 +2,8 @@ package fipe.preco.preco_fipe.mapper;
 
 import fipe.preco.preco_fipe.domain.Comparison;
 import fipe.preco.preco_fipe.domain.User;
-import fipe.preco.preco_fipe.response.ComparisonGetResponse;
-import fipe.preco.preco_fipe.response.ComparisonPostResponse;
+import fipe.preco.preco_fipe.dto.response.ComparisonGetResponse;
+import fipe.preco.preco_fipe.dto.response.ComparisonPostResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
