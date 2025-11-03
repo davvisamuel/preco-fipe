@@ -19,7 +19,6 @@ public class VehicleDataService {
 
     private final VehicleDataRepository vehicleDataRepository;
     private final VehicleDataMapper vehicleDataMapper;
-
     private final FuelService fuelService;
 
     public VehicleData saveVehicleData(FipeInformationResponse fipeInformationResponse) {
@@ -34,6 +33,7 @@ public class VehicleDataService {
         }
 
         var fuel = fuelService.findByFuelAcronym(fuelAcronym);
+
         var vehicleTypeName = VehicleType.getVehicleTypeById(vehicleTypeId).orElse("N/A");
 
         var vehicleData = vehicleDataMapper.toVehicleData(fipeInformationResponse, fuel, vehicleTypeName);

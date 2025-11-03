@@ -3,7 +3,6 @@ package fipe.preco.preco_fipe.service;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.mapper.FavoriteMapper;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
-import fipe.preco.preco_fipe.repository.VehicleDataRepository;
 import fipe.preco.preco_fipe.utils.FavoriteUtils;
 import fipe.preco.preco_fipe.utils.UserUtils;
 import fipe.preco.preco_fipe.utils.VehicleDataUtils;
@@ -29,7 +28,7 @@ class FavoriteServiceTest {
     @Mock
     private FavoriteMapper favoriteMapper;
     @Mock
-    private VehicleDataRepository vehicleDataRepository;
+    private VehicleDataService vehicleDataService;
     @InjectMocks
     private UserUtils userUtils;
     @InjectMocks
@@ -52,7 +51,7 @@ class FavoriteServiceTest {
 
         var expectedFavorite = favoriteUtils.newFavoriteSaved(user, vehicleData);
 
-        BDDMockito.when(vehicleDataRepository.findByCodeFipe(codeFipe)).thenReturn(Optional.of(vehicleData));
+        BDDMockito.when(vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe)).thenReturn(vehicleData);
 
         BDDMockito.when(favoriteMapper.toFavorite(user, vehicleData)).thenReturn(favoriteToSave);
 
@@ -77,7 +76,7 @@ class FavoriteServiceTest {
 
         var codeFipe = "999999-9";
 
-        BDDMockito.when(vehicleDataRepository.findByCodeFipe(codeFipe)).thenReturn(Optional.empty());
+        BDDMockito.when(vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe)).thenThrow(new NotFoundException("VehicleData not found"));
 
         Assertions.assertThatException()
                 .isThrownBy(() -> favoriteService.save(user, codeFipe))
