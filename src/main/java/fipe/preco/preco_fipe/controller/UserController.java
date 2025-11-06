@@ -6,7 +6,6 @@ import fipe.preco.preco_fipe.dto.request.UserPutRequest;
 import fipe.preco.preco_fipe.dto.response.UserGetResponse;
 import fipe.preco.preco_fipe.dto.response.UserPostResponse;
 import fipe.preco.preco_fipe.exception.ApiError;
-import fipe.preco.preco_fipe.exception.EmailAlreadyExistsException;
 import fipe.preco.preco_fipe.mapper.UserMapper;
 import fipe.preco.preco_fipe.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -36,10 +36,16 @@ public class UserController {
     private final UserMapper mapper;
 
     @GetMapping
-    @Operation(summary = "Get all users (paginated)")
+    @Operation(summary = "Get all users (paginated)",
+            description = "Admin only.",
+            security = {@SecurityRequirement(name = "bearerAuth")})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of User retrieved successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserGetResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - only administrators can access this resource"),
     })
     public ResponseEntity<Page<UserGetResponse>> findAll(@ParameterObject Pageable pageable) {
         var userPage = service.findAll(pageable);
@@ -50,10 +56,16 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get user by ID")
+    @Operation(summary = "Get user by ID",
+            description = "Admin only.",
+            security = {@SecurityRequirement(name = "bearerAuth")})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserGetResponse.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - only administrators can access this resource"),
     })
     public ResponseEntity<UserGetResponse> findById(@PathVariable Integer id) {
         var user = service.findById(id);
@@ -69,11 +81,8 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "User created successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserPostResponse.class))),
 
-            @ApiResponse(responseCode = "400", description = "Email already exists",
+            @ApiResponse(responseCode = "400", description = "Email already exists or invalid request",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
-
-            @ApiResponse(responseCode = "400", description = "Invalid request",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     public ResponseEntity<UserPostResponse> save(@RequestBody @Valid UserPostRequest userPostRequest) {
         log.debug("Request received for '{}'", userPostRequest);
@@ -89,7 +98,7 @@ public class UserController {
 
 
     @PutMapping
-    @Operation(summary = "Update a user")
+    @Operation(summary = "Update a user", security = {@SecurityRequirement(name = "bearerAuth")})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "User updated successfully"),
 
@@ -97,7 +106,12 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
 
             @ApiResponse(responseCode = "400", description = "Email already exists",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = EmailAlreadyExistsException.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
+
     })
     public ResponseEntity<Void> update(@AuthenticationPrincipal User user, @RequestBody @Valid UserPutRequest userPutRequest) {
         var userToUpdate = mapper.toUser(userPutRequest);
@@ -108,9 +122,13 @@ public class UserController {
     }
 
     @DeleteMapping
-    @Operation(summary = "Delete a user")
+    @Operation(summary = "Delete a user", security = {@SecurityRequirement(name = "bearerAuth")})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User deleted successfully")
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<Void> delete(@AuthenticationPrincipal User user) {
         service.delete(user);

@@ -64,7 +64,8 @@ public class FipeApiController {
     }
 
     @GetMapping("/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}")
-    @Operation(summary = "Get FIPE information by year ID")
+    @Operation(summary = "Get FIPE information by year ID",
+               description = "If the user is authenticated, the consultation will be saved automatically.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fipe information retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = FipeInformationResponse.class))),
@@ -73,7 +74,11 @@ public class FipeApiController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class))),
 
             @ApiResponse(responseCode = "409", description = "Comparison limit exceeded",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<FipeInformationResponse> retrieveFipeInformation(@AuthenticationPrincipal User user,
                                                                            @PathVariable String vehicleType,

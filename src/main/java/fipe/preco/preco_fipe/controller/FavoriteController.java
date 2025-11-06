@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Favorites", description = "Manage user's favorite vehicles")
+@SecurityRequirement(name = "bearerAuth")
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
@@ -44,7 +46,11 @@ public class FavoriteController {
 
             @ApiResponse(responseCode = "400", description = "Invalid request",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ApiError.class)))
+                            schema = @Schema(implementation = ApiError.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<FavoritePostResponse> save(@AuthenticationPrincipal User user, @RequestBody @Valid FavoritePostRequest favoritePostRequest) {
         log.debug("Request received for '{}'", favoritePostRequest);
@@ -63,7 +69,11 @@ public class FavoriteController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of favorites retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = FavoritePostResponse.class)))
+                            schema = @Schema(implementation = Page.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<Page<FavoriteGetResponse>> findAllPaginated(@AuthenticationPrincipal User user, @ParameterObject Pageable pageable) {
         log.debug("Request received to list all favorites paginated");
@@ -80,7 +90,11 @@ public class FavoriteController {
 
             @ApiResponse(responseCode = "404", description = "Favorite not found",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = DefaultErrorMessage.class)))
+                            schema = @Schema(implementation = DefaultErrorMessage.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user not allowed to delete this favorite"),
     })
     public ResponseEntity<Void> delete(@AuthenticationPrincipal User user, @PathVariable Integer id) {
         log.debug("request received for delete favorite");

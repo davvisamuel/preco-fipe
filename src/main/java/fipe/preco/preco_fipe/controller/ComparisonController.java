@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Comparisons", description = "Manage user's comparison")
+@SecurityRequirement(name = "bearerAuth")
 public class ComparisonController {
 
     private final ComparisonService comparisonService;
@@ -40,7 +42,11 @@ public class ComparisonController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ComparisonPostResponse.class))),
 
             @ApiResponse(responseCode = "400", description = "Invalid request",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     private ResponseEntity<ComparisonPostResponse> save(@AuthenticationPrincipal User user) {
         log.debug("Request received for creates comparison");
@@ -60,7 +66,11 @@ public class ComparisonController {
             @ApiResponse(responseCode = "204", description = "Comparison deleted successfully"),
 
             @ApiResponse(responseCode = "404", description = "Comparison not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     private ResponseEntity<Void> delete(@PathVariable Integer id, @AuthenticationPrincipal User user) {
         log.debug("Request received for delete comparison where id '{}'", id);
@@ -74,7 +84,11 @@ public class ComparisonController {
     @Operation(summary = "Get all comparisons (paginated)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of comparison retrieved successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ComparisonPostResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     private ResponseEntity<Page<ComparisonGetResponse>> findAllPaginated(@AuthenticationPrincipal User user, @ParameterObject Pageable pageable) {
         log.debug("Request received for '{}'", pageable);

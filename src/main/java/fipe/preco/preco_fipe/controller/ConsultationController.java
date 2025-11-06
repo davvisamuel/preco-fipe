@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Consultations", description = "Manage user's consultations")
+@SecurityRequirement(name = "bearerAuth")
 public class ConsultationController {
     private final ConsultationService consultationService;
     private final ConsultationMapper consultationMapper;
@@ -33,7 +35,11 @@ public class ConsultationController {
     @Operation(summary = "Get all consultations (paginated)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of consultation retrieved successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ConsultationGetResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Page.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<Page<ConsultationGetResponse>> findAllPaginated(@ParameterObject Pageable pageable) {
         log.debug("Request received for '{}'", pageable);
@@ -51,7 +57,11 @@ public class ConsultationController {
             @ApiResponse(responseCode = "204", description = "Comparison deleted successfully"),
 
             @ApiResponse(responseCode = "404", description = "Consultation not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = DefaultErrorMessage.class))),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<Void> delete(@AuthenticationPrincipal User user, @PathVariable Integer id) {
         log.debug("Request received for delete consultation '{}'", id);
@@ -64,7 +74,11 @@ public class ConsultationController {
     @DeleteMapping
     @Operation(summary = "Delete all consultations for the authenticated user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Comparisons deleted successfully")
+            @ApiResponse(responseCode = "204", description = "Comparisons deleted successfully"),
+
+            @ApiResponse(responseCode = "401", description = "Unauthorized - missing or invalid token"),
+
+            @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
     public ResponseEntity<Void> deleteAllByUser(@AuthenticationPrincipal User user) {
         log.debug("Request received for delete all consultations of '{}'", user);
