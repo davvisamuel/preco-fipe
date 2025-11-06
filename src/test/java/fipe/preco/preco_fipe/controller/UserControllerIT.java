@@ -4,8 +4,8 @@ import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.security.TokenService;
+import fipe.preco.preco_fipe.utils.AuthUtils;
 import fipe.preco.preco_fipe.utils.FileUtils;
-import fipe.preco.preco_fipe.utils.UserUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
@@ -41,7 +41,7 @@ class UserControllerIT {
     private FileUtils fileUtils;
 
     @Autowired
-    private UserUtils userUtils;
+    private AuthUtils authUtils;
 
     @Autowired
     private UserRepository repository;
@@ -56,12 +56,12 @@ class UserControllerIT {
     }
 
     @Test
-    @DisplayName("GET v1/user returns all users when successful")
+    @DisplayName("GET v1/user returns user page when successful")
     @Order(1)
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void findAll_ReturnsAllUsers_WhenSuccessful() throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+    void findAllPaginated_ReturnsUserPage_WhenSuccessful() throws IOException {
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
 
         var expectedResponse = fileUtils.readResourceFile("/user/get-user-response-200.json");
 
@@ -78,13 +78,6 @@ class UserControllerIT {
         JsonAssertions.assertThatJson(response)
                 .whenIgnoringPaths("[*].id")
                 .isEqualTo(expectedResponse);
-
-
-        JsonAssertions.assertThatJson(response)
-                .and(users -> {
-                    users.node("[0].id").asNumber().isPositive();
-                    users.node("[1].id").asNumber().isPositive();
-                });
     }
 
     @Test
@@ -93,7 +86,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findById_ReturnsUser_WhenIdIsFound() throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
 
         var expectedResponse = fileUtils.readResourceFile("/user/get-user-by-id-response-200.json");
 
@@ -125,7 +118,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findById_ThrowsNotFoundException_WhenIdIsNotFound() throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
 
         var expectedResponse = fileUtils.readResourceFile("/user/get-user-by-id-response-404.json");
 
@@ -179,7 +172,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void update_UpdatesUser_WhenIdIsFound() throws IOException {
-        var userToken = userUtils.login("/auth/post-auth-user-request-200.json");
+        var userToken = authUtils.login("/auth/post-auth-user-request-200.json");
 
         var id = tokenService.validateLogin(userToken);
 
@@ -211,9 +204,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void update_ThrowEmailAlreadyExists_WhenEmailAlreadyExists() throws IOException {
-        var userToken = userUtils.login("/auth/post-auth-user-request-200.json");
-
-        var id = tokenService.validateLogin(userToken);
+        var userToken = authUtils.login("/auth/post-auth-user-request-200.json");
 
         var request = fileUtils.readResourceFile("/user/put-user-request-400.json");
 
@@ -242,7 +233,7 @@ class UserControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void delete_RemovesUser_WhenIdIsFound() throws IOException {
-        var userToken = userUtils.login("/auth/post-auth-user-request-200.json");
+        var userToken = authUtils.login("/auth/post-auth-user-request-200.json");
 
         var id = tokenService.validateLogin(userToken);
 

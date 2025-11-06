@@ -1,12 +1,11 @@
 package fipe.preco.preco_fipe.utils;
 
 import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FipeInformationUtils {
 
-    public FipeInformationResponse newFipeInformationResponse() {
+    public static FipeInformationResponse newFipeInformationResponse() {
+
         return FipeInformationResponse.builder()
                 .vehicleType(1)
                 .price("R$ 10.980,00")

@@ -12,9 +12,8 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -27,29 +26,25 @@ class UserServiceTest {
     private UserService service;
     @Mock
     private UserRepository repository;
-    @InjectMocks
-    private UserUtils userUtils;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private SecurityContext securityContext;
-    @Mock
-    private Authentication authentication;
 
     @Test
-    @DisplayName("findAll returns all users when successful")
+    @DisplayName("findAll returns user page when successful")
     @Order(1)
-    void findAll_ReturnsAllUsers_WhenSuccessful() {
-        BDDMockito.when(repository.findAll()).thenReturn(userUtils.newUserList());
+    void findAll_ReturnsUserPage_WhenSuccessful() {
+        var expectedUserPage = UserUtils.newPageUser();
 
-        var expectedUserList = userUtils.newUserList();
+        var pageable = expectedUserPage.getPageable();
 
-        var userList = service.findAll();
+        BDDMockito.when(repository.findAll(pageable)).thenReturn(expectedUserPage);
 
-        Assertions.assertThat(userList)
+        var userPage = service.findAll(pageable);
+
+        Assertions.assertThat(userPage)
                 .isNotNull()
                 .isNotEmpty()
-                .hasSameElementsAs(expectedUserList)
+                .hasSameElementsAs(expectedUserPage)
                 .doesNotContainNull();
     }
 
@@ -57,9 +52,11 @@ class UserServiceTest {
     @DisplayName("findAll returns an empty list when successful")
     @Order(2)
     void findAll_ReturnsEmptyList_WhenSuccessful() {
-        BDDMockito.when(repository.findAll()).thenReturn(Collections.emptyList());
+        var unpaged = Pageable.unpaged();
 
-        var userList = service.findAll();
+        BDDMockito.when(repository.findAll(unpaged)).thenReturn(new PageImpl<>(Collections.emptyList()));
+
+        var userList = service.findAll(unpaged);
 
         Assertions.assertThat(userList)
                 .isNotNull()
@@ -70,11 +67,11 @@ class UserServiceTest {
     @DisplayName("save creates a user when successful")
     @Order(3)
     void save_CreatesUser_WhenSuccessful() {
-        var userToSave = userUtils.newUserToSave();
+        var userToSave = UserUtils.newUserToSave();
 
-        var encodedPassword = "$2a$10$QvLzMZj0H3V7Z6p2Zv8F/O3FzXKkF2xY5Hq0jM2FsC3v1P7U7k0lO";
+        var expectedUserSaved = UserUtils.newSavedUser();
 
-        var expectedUserSaved = userUtils.newSavedUser();
+        var encodedPassword = expectedUserSaved.getPassword();
 
         BDDMockito.when(passwordEncoder.encode(userToSave.getPassword())).thenReturn(encodedPassword);
 
@@ -92,9 +89,9 @@ class UserServiceTest {
     @DisplayName("save ThrowsEmailAlreadyExistsException when email already exists")
     @Order(4)
     void save_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyExists() {
-        var userToSave = userUtils.newUserToSave();
+        var userToSave = UserUtils.newUserToSave();
 
-        var savedUser = userUtils.newSavedUser();
+        var savedUser = UserUtils.newSavedUser();
 
         BDDMockito.when(repository.findByEmail(userToSave.getEmail())).thenReturn(Optional.of(savedUser));
 
@@ -107,7 +104,7 @@ class UserServiceTest {
     @DisplayName("findById returns a user when id is found")
     @Order(5)
     void findById_ReturnsUser_WhenIdIsFound() {
-        var savedUser = userUtils.newSavedUser();
+        var savedUser = UserUtils.newSavedUser();
 
         var id = savedUser.getId();
 
@@ -138,66 +135,50 @@ class UserServiceTest {
     @DisplayName("delete removes a user when successful")
     @Order(7)
     void delete_RemovesUser_WhenSuccessful() {
-        var authenticatedUser = userUtils.newSavedUser();
-
-        setSecurityContext(authenticatedUser);
+        var authenticatedUser = UserUtils.newSavedUser();
 
         BDDMockito.doNothing().when(repository).delete(authenticatedUser);
 
         Assertions.assertThatNoException()
-                .isThrownBy(() -> service.delete());
+                .isThrownBy(() -> service.delete(authenticatedUser));
     }
 
     @Test
     @DisplayName("update updates a user when id is found")
     @Order(8)
     void update_UpdatesUser_WhenSuccessful() {
-        var authenticatedUser = userUtils.newSavedUser();
+        var authenticatedUser = UserUtils.newSavedUser();
 
-        setSecurityContext(authenticatedUser);
+        var savedUser = UserUtils.newSavedUser();
 
-        var savedUser = userUtils.newSavedUser();
-
-        var userToUpdate = userUtils.newUserToUpdate();
+        var userToUpdate = UserUtils.newUserToUpdate();
 
         BDDMockito.when(repository.findById(authenticatedUser.getId())).thenReturn(Optional.of(savedUser));
 
         BDDMockito.when(repository.findByEmailAndIdNot(userToUpdate.getEmail(), savedUser.getId())).thenReturn(Optional.empty());
 
         Assertions.assertThatNoException()
-                .isThrownBy(() -> service.update(userToUpdate));
+                .isThrownBy(() -> service.update(authenticatedUser, userToUpdate));
     }
 
     @Test
     @DisplayName("update ThrowsEmailAlreadyExistsException when email already exists")
     @Order(9)
     void update_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyExists() {
-        var authenticatedUser = userUtils.newSavedUser();
+        var authenticatedUser = UserUtils.newSavedUser();
 
-        setSecurityContext(authenticatedUser);
+        var savedUser = UserUtils.newSavedUser();
 
-        var savedUser = userUtils.newSavedUser();
+        var userToUpdate = UserUtils.newUserToUpdate();
 
-        var userToUpdate = userUtils.newUserToUpdate();
-
-        var existingUser = userUtils.newUserToUpdate();
+        var existingUser = UserUtils.newUserToUpdate();
 
         BDDMockito.when(repository.findById(authenticatedUser.getId())).thenReturn(Optional.of(savedUser));
 
         BDDMockito.when(repository.findByEmailAndIdNot(userToUpdate.getEmail(), savedUser.getId())).thenReturn(Optional.of(existingUser));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> service.update(userToUpdate))
+                .isThrownBy(() -> service.update(authenticatedUser, userToUpdate))
                 .isInstanceOf(EmailAlreadyExistsException.class);
-    }
-
-    public void setSecurityContext(User authenticatedUser) {
-        SecurityContextHolder.setContext(securityContext);
-
-        BDDMockito.when(securityContext.getAuthentication())
-                .thenReturn(authentication);
-
-        BDDMockito.when(authentication.getPrincipal())
-                .thenReturn(authenticatedUser);
     }
 }

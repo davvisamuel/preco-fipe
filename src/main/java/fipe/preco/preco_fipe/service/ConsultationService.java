@@ -1,12 +1,11 @@
 package fipe.preco.preco_fipe.service;
 
-import fipe.preco.preco_fipe.domain.Comparison;
 import fipe.preco.preco_fipe.domain.Consultation;
 import fipe.preco.preco_fipe.domain.User;
+import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.mapper.ConsultationMapper;
 import fipe.preco.preco_fipe.repository.ConsultationRepository;
-import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +18,23 @@ public class ConsultationService {
     private final ConsultationMapper consultationMapper;
     private final VehicleDataService vehicleDataService;
     private final ComparisonService comparisonService;
+
+    public void saveConsultation(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
+        var vehicleData = vehicleDataService.saveVehicleData(fipeInformationResponse);
+
+        var consultation = consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse);
+
+        if (comparisonId != null) {
+            var comparison = comparisonService.findByIdAndUser(comparisonId, user);
+            consultation.setComparison(comparison);
+        }
+
+        consultationRepository.save(consultation);
+    }
+
+    public Consultation findByIdAndUserAndComparisonIsNull(Integer id, User user) {
+        return consultationRepository.findByIdAndUserAndComparisonIsNull(id, user).orElseThrow(() -> new NotFoundException("Consultation not found"));
+    }
 
     public Page<Consultation> findAllPaginated(Pageable pageable) {
         return consultationRepository.findAllByComparisonIsNull(pageable);
@@ -33,22 +49,4 @@ public class ConsultationService {
         consultationRepository.deleteAllByUserAndComparisonIsNull(user);
     }
 
-    public void saveConsultation(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
-        var vehicleData = vehicleDataService.saveVehicleData(fipeInformationResponse);
-
-        Comparison comparison = null;
-
-        if (comparisonId != null) {
-            comparison = comparisonService.findByIdAndUser(comparisonId, user);
-        }
-
-        var consultation = consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse);
-        consultation.setComparison(comparison);
-
-        consultationRepository.save(consultation);
-    }
-
-    public Consultation findByIdAndUserAndComparisonIsNull(Integer id, User user) {
-        return consultationRepository.findByIdAndUserAndComparisonIsNull(id, user).orElseThrow(() -> new NotFoundException("Consultation not found"));
-    }
 }

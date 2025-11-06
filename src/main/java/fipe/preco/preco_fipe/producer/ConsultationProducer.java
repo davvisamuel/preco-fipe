@@ -2,8 +2,8 @@ package fipe.preco.preco_fipe.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fipe.preco.preco_fipe.mapper.ConsultationProducerMapper;
 import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
+import fipe.preco.preco_fipe.mapper.ConsultationProducerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

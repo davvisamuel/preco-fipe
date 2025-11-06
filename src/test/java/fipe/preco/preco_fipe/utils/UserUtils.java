@@ -1,80 +1,66 @@
 package fipe.preco.preco_fipe.utils;
 
+import fipe.preco.preco_fipe.domain.Role;
 import fipe.preco.preco_fipe.domain.User;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-@RequiredArgsConstructor
 public class UserUtils {
 
-    private final FileUtils fileUtils;
-
-    public String login(String filePathRequest) throws IOException {
-        var request = fileUtils.readResourceFile(filePathRequest);
-
-        return RestAssured.given()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/v1/auth/login")
-                .then()
-                .extract()
-                .path("token");
-    }
-
-    public List<User> newUserList() {
+    public static List<User> newUserList() {
         var user1 = User.builder()
                 .id(1)
                 .email("test1@gmail.com")
                 .password("test1")
-                .roles("USER")
+                .role(Role.USER.name())
                 .build();
 
         var user2 = User.builder()
                 .id(2)
                 .email("test2@outlook.com")
                 .password("test2")
-                .roles("USER")
+                .role(Role.USER.name())
                 .build();
 
         var user3 = User.builder()
                 .id(3)
                 .email("test3@gmail.com")
                 .password("test3")
-                .roles("USER")
+                .role(Role.USER.name())
                 .build();
 
         return new ArrayList<>(List.of(user1, user2, user3));
     }
 
-    public User newUserToSave() {
+    public static User newUserToSave() {
         return User.builder()
                 .email("test1@gmail.com")
                 .password("test1")
                 .build();
     }
 
-    public User newSavedUser() {
+    public static User newSavedUser() {
         return User.builder()
                 .id(4)
                 .email("test1@gmail.com")
                 .password("$2a$10$QvLzMZj0H3V7Z6p2Zv8F/O3FzXKkF2xY5Hq0jM2FsC3v1P7U7k0lO")
-                .roles("USER")
+                .role(Role.USER.name())
                 .build();
     }
 
-    public User newUserToUpdate() {
+    public static User newUserToUpdate() {
         return User.builder()
                 .email("updated@gmail.com")
                 .password("updated")
                 .build();
+    }
+
+    public static Page<User> newPageUser() {
+        var pageable = Pageable.ofSize(3);
+        return new PageImpl<>(newUserList(), pageable, pageable.getPageSize());
     }
 }

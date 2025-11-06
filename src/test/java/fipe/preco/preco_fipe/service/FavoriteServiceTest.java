@@ -29,27 +29,21 @@ class FavoriteServiceTest {
     private FavoriteMapper favoriteMapper;
     @Mock
     private VehicleDataService vehicleDataService;
-    @InjectMocks
-    private UserUtils userUtils;
-    @InjectMocks
-    private FavoriteUtils favoriteUtils;
-    @InjectMocks
-    private VehicleDataUtils vehicleDataUtils;
 
 
     @Test
     @Order(1)
     @DisplayName("save creates favorite when successful")
     void save_CreatesFavorite_WhenSuccessful() {
-        var user = userUtils.newSavedUser();
+        var user = UserUtils.newSavedUser();
 
-        var vehicleData = vehicleDataUtils.newVehicleData();
+        var vehicleData = VehicleDataUtils.newVehicleData();
 
         var codeFipe = "038003-2";
 
-        var favoriteToSave = favoriteUtils.newFavoriteToSave(user, vehicleData);
+        var favoriteToSave = FavoriteUtils.newFavoriteToSave(user, vehicleData);
 
-        var expectedFavorite = favoriteUtils.newFavoriteSaved(user, vehicleData);
+        var expectedFavorite = FavoriteUtils.newFavoriteSaved(user, vehicleData);
 
         BDDMockito.when(vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe)).thenReturn(vehicleData);
 
@@ -72,7 +66,7 @@ class FavoriteServiceTest {
     @Order(2)
     @DisplayName("save throws NotFoundException when vehicleData not found")
     void save_ThrowsNotFoundException_WhenVehicleDataNotFound() {
-        var user = userUtils.newSavedUser();
+        var user = UserUtils.newSavedUser();
 
         var codeFipe = "999999-9";
 
@@ -87,13 +81,13 @@ class FavoriteServiceTest {
     @Order(3)
     @DisplayName("findAllPaginated returns Page<Favorite> when successful")
     void findAllPaginated_ReturnsPageOfFavorites_WhenSuccessful() {
-        var savedUser = userUtils.newSavedUser();
+        var savedUser = UserUtils.newSavedUser();
 
-        var vehicleData = vehicleDataUtils.newVehicleData();
+        var vehicleData = VehicleDataUtils.newVehicleData();
 
         var pageable = Pageable.unpaged();
 
-        var expectedFavoritePage = favoriteUtils.newFavoritePage(savedUser, vehicleData);
+        var expectedFavoritePage = FavoriteUtils.newFavoritePage(savedUser, vehicleData);
 
         BDDMockito.when(favoriteRepository.findAllByUser(pageable, savedUser))
                 .thenReturn(expectedFavoritePage);
@@ -109,11 +103,11 @@ class FavoriteServiceTest {
     @Order(4)
     @DisplayName("findById returns favorite when favorite is found")
     void findById_ReturnsFavorite_WhenFavoriteIsFound() {
-        var user = userUtils.newSavedUser();
+        var user = UserUtils.newSavedUser();
 
-        var vehicleData = vehicleDataUtils.newVehicleData();
+        var vehicleData = VehicleDataUtils.newVehicleData();
 
-        var favorite = favoriteUtils.newFavoriteSaved(user, vehicleData);
+        var favorite = FavoriteUtils.newFavoriteSaved(user, vehicleData);
 
         var id = favorite.getId();
 
@@ -141,11 +135,11 @@ class FavoriteServiceTest {
     @Order(6)
     @DisplayName("delete removes favorite when favorite is found")
     void delete_RemovesFavorite_WhenFavoriteIsFound() {
-        var user = userUtils.newSavedUser();
+        var user = UserUtils.newSavedUser();
 
-        var vehicleData = vehicleDataUtils.newVehicleData();
+        var vehicleData = VehicleDataUtils.newVehicleData();
 
-        var favorite = favoriteUtils.newFavoriteSaved(user, vehicleData);
+        var favorite = FavoriteUtils.newFavoriteSaved(user, vehicleData);
 
         var id = favorite.getId();
 
@@ -159,7 +153,7 @@ class FavoriteServiceTest {
     @Order(7)
     @DisplayName("delete throws NotFoundException favorite when favorite not found")
     void delete_ThrowsNotFoundException_WhenFavoriteNotFound() {
-        var user = userUtils.newSavedUser();
+        var user = UserUtils.newSavedUser();
 
         var id = 999;
 

@@ -26,7 +26,8 @@ public class FipeApiService {
     public final ComparisonService comparisonService;
 
     public List<BrandResponse> findAllBrandsByType(String vehicleType) {
-        var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {};
+        var typeReference = new ParameterizedTypeReference<List<BrandResponse>>() {
+        };
 
         return fipeApiClient.build()
                 .get()
@@ -41,7 +42,8 @@ public class FipeApiService {
     }
 
     public List<ModelResponse> findAllModelsByBrandId(String vehicleType, String brandId) {
-        var typeReference = new ParameterizedTypeReference<List<ModelResponse>>() {};
+        var typeReference = new ParameterizedTypeReference<List<ModelResponse>>() {
+        };
 
         return fipeApiClient.build()
                 .get()
@@ -56,7 +58,8 @@ public class FipeApiService {
     }
 
     public List<YearResponse> findAllYearsByModelId(String vehicleType, String brandId, String modelId) {
-        var typeReference = new ParameterizedTypeReference<List<YearResponse>>() {};
+        var typeReference = new ParameterizedTypeReference<List<YearResponse>>() {
+        };
 
         return fipeApiClient.build()
                 .get()
@@ -94,10 +97,11 @@ public class FipeApiService {
             return;
         }
 
-        var comparison = comparisonService.findByIdAndUser(comparisonId, user);
+        if (comparisonId != null) {
+            var comparison = comparisonService.findByIdAndUser(comparisonId, user);
 
-        if(comparison.getConsultations().size() >= 3) {
-            throw new ComparisonLimitExceededException("A comparação já atingiu o limite de 3 consultas.");
+            if (comparison.getConsultations().size() >= 3)
+                throw new ComparisonLimitExceededException("A comparação já atingiu o limite de 3 consultas.");
         }
 
         try {

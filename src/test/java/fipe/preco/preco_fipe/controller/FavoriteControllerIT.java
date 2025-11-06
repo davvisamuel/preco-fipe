@@ -3,12 +3,11 @@ package fipe.preco.preco_fipe.controller;
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
+import fipe.preco.preco_fipe.utils.AuthUtils;
 import fipe.preco.preco_fipe.utils.FileUtils;
-import fipe.preco.preco_fipe.utils.UserUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import lombok.RequiredArgsConstructor;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
@@ -37,7 +36,7 @@ class FavoriteControllerIT {
     private RequestSpecification requestSpecification;
 
     @Autowired
-    private UserUtils userUtils;
+    private AuthUtils authUtils;
 
     @Autowired
     private FileUtils fileUtils;
@@ -57,7 +56,7 @@ class FavoriteControllerIT {
     @Sql(value = "/sql/clean_favorites.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void save_CreatesFavorite_WhenValidFields() throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
         var request = fileUtils.readResourceFile("/favorite/favorite-post-request-200.json");
 
         var response = RestAssured.given()
@@ -88,7 +87,7 @@ class FavoriteControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void save_ThrowsNotFoundException_WhenCodeFipeNotFound() throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
         var request = fileUtils.readResourceFile("/favorite/favorite-post-request-404.json");
         var expectedResponse = fileUtils.readResourceFile("/favorite/favorite-post-response-404.json");
 
@@ -114,7 +113,7 @@ class FavoriteControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findAllPaginated_ReturnsPageOfFavorites_WhenSuccessful() throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
         var expectedResponse = fileUtils.readResourceFile("/favorite/get-favorite-find-all-paginated-response-200.json");
 
         var response = RestAssured.given()
@@ -139,7 +138,7 @@ class FavoriteControllerIT {
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void save_ReturnsBadRequest_WhenInvalidFields(String requestPath, String expectedResponsePath) throws IOException {
-        var adminToken = userUtils.login("/auth/post-auth-admin-request-200.json");
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
         var request = fileUtils.readResourceFile(requestPath);
         var expectedResponse = fileUtils.readResourceFile(expectedResponsePath);
 

@@ -28,12 +28,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String roles;
+    private String role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.equals("ADMIN") ? List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USER"))
-                : List.of(new SimpleGrantedAuthority("USER"));
+        return role.equals(Role.ADMIN.name())? List.of(new SimpleGrantedAuthority(Role.ADMIN.name()), new SimpleGrantedAuthority(Role.USER.name()))
+                : List.of(new SimpleGrantedAuthority(Role.USER.name()));
     }
 
     @Override

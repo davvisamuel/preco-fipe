@@ -3,7 +3,7 @@ CREATE TABLE preco_fipe.user
     id       INT PRIMARY KEY AUTO_INCREMENT,
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    roles    VARCHAR(10)  NOT NULL,
+    role     VARCHAR(10)  NOT NULL,
 
     CONSTRAINT UQ_user_email UNIQUE (email)
 );

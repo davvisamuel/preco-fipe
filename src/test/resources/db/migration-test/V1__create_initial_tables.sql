@@ -3,7 +3,7 @@ CREATE TABLE preco_fipe.user
     id       INT PRIMARY KEY AUTO_INCREMENT,
     email    VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    roles    VARCHAR(10)  NOT NULL,
+    role    VARCHAR(10)  NOT NULL,
 
     CONSTRAINT UQ_user_email UNIQUE (email)
 );
@@ -70,7 +70,7 @@ CREATE TABLE preco_fipe.consultation
 
     CONSTRAINT FK_consultation_comparison_id FOREIGN KEY (comparison_id)
         REFERENCES preco_fipe.comparison (id)
-        ON DELETE SET NULL
+            ON DELETE SET NULL
 );
 
 CREATE TABLE favorite

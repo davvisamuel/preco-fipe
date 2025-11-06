@@ -1,5 +1,6 @@
 package fipe.preco.preco_fipe.security;
 
+import fipe.preco.preco_fipe.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     private final AuthenticationFilter authenticationFilter;
-    private static final String[] WHITE_LIST = {"/v1/api/**", "/v1/auth/**", "/v1/user/register"};
+    private static final String[] WHITE_LIST = {"/v1/api/**",
+                                                "/v1/auth/**",
+                                                "/v1/user/register",
+                                                "/swagger-ui.html",
+                                                "/swagger-ui/**",
+                                                "/v3/api-docs/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -30,17 +36,12 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST).permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/v1/user").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.PUT, "/v1/user").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.POST, "/v1/favorite").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/favorite/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET, "/v1/favorite").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.POST, "/v1/comparison").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/comparison/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET, "/v1/comparison").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.POST, "/v1/comparisonConsultation").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/v1/comparisonConsultation/**").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.GET).hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/v1/user").hasAuthority(Role.USER.name())
+                        .requestMatchers(HttpMethod.PUT, "/v1/user").hasAuthority(Role.USER.name())
+                        .requestMatchers("/v1/favorite/**").hasAuthority(Role.USER.name())
+                        .requestMatchers("/v1/comparison/**").hasAuthority(Role.USER.name())
+                        .requestMatchers("/v1/consultation/**").hasAuthority(Role.USER.name())
+                        .anyRequest().hasAuthority(Role.ADMIN.name())
                 )
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

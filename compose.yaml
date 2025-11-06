@@ -1,19 +1,19 @@
 services:
 
-  my-sql:
-    container_name: my-sql
-    image: mysql:9.4.0
+  mysql:
+    container_name: mysql
+    image: mysql:9.5.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${ENV_MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ENV_ROOT_PASSWORD}
       MYSQL_USER: ${ENV_MYSQL_USER}
       MYSQL_PASSWORD: ${ENV_MYSQL_PASSWORD}
     ports:
-      - "3307:3307"
+      - "3307:3306"
     volumes:
       - db-volume:/var/lib/mysql
 
   rabbitmq:
-    container_name: rabbitmq2
+    container_name: rabbitmq
     image: rabbitmq:4.1.4-management
     ports:
       - "5672:5672"

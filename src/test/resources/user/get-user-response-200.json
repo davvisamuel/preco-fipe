@@ -1,1 +1,1 @@
-[{"id":1,"email":"admin@example.com"},{"id":2,"email":"user@example.com"}]
+{"content":[{"id":11,"email":"admin@example.com"},{"id":12,"email":"user@example.com"}],"pageable":{"pageNumber":0,"pageSize":20,"sort":{"empty":true,"unsorted":true,"sorted":false},"offset":0,"paged":true,"unpaged":false},"last":true,"totalElements":2,"totalPages":1,"size":20,"number":0,"sort":{"empty":true,"unsorted":true,"sorted":false},"numberOfElements":2,"first":true,"empty":false}

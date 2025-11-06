@@ -1,7 +1,5 @@
 package fipe.preco.preco_fipe.service;
 
-import fipe.preco.preco_fipe.domain.VehicleType;
-import fipe.preco.preco_fipe.dto.response.FipeInformationResponse;
 import fipe.preco.preco_fipe.mapper.VehicleDataMapper;
 import fipe.preco.preco_fipe.repository.VehicleDataRepository;
 import fipe.preco.preco_fipe.utils.FipeInformationUtils;
@@ -23,12 +21,6 @@ class VehicleDataServiceTest {
     @InjectMocks
     VehicleDataService vehicleDataService;
 
-    @InjectMocks
-    VehicleDataUtils vehicleDataUtils;
-
-    @InjectMocks
-    FipeInformationUtils fipeInformationUtils;
-
     @Mock
     VehicleDataRepository vehicleDataRepository;
 
@@ -42,9 +34,9 @@ class VehicleDataServiceTest {
     @DisplayName("saveVehicleData returns vehicleData when exists")
     @Order(1)
     void saveVehicleData_ReturnsVehicleData_WhenExists() {
-        var fipeInformationResponse = fipeInformationUtils.newFipeInformationResponse();
+        var fipeInformationResponse = FipeInformationUtils.newFipeInformationResponse();
 
-        var vehicleData = vehicleDataUtils.newVehicleData();
+        var vehicleData = VehicleDataUtils.newVehicleData();
 
         var codeFipe = vehicleData.getCodeFipe();
 
@@ -62,7 +54,7 @@ class VehicleDataServiceTest {
     @DisplayName("saveVehicleData creates vehicleData when not exists")
     @Order(2)
     void saveVehicleData_CreatesVehicleData_WhenNotExists() {
-        var fipeInformationResponse = fipeInformationUtils.newFipeInformationResponse();
+        var fipeInformationResponse = FipeInformationUtils.newFipeInformationResponse();
 
         var codeFipe = fipeInformationResponse.codeFipe();
 
@@ -70,7 +62,7 @@ class VehicleDataServiceTest {
 
         BDDMockito.when(vehicleDataRepository.findByCodeFipe(codeFipe)).thenReturn(Optional.empty());
 
-        var vehicleData = vehicleDataUtils.newVehicleData();
+        var vehicleData = VehicleDataUtils.newVehicleData();
 
         var fuelSaved = vehicleData.getFuel();
 

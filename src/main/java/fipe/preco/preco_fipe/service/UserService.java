@@ -1,15 +1,15 @@
 package fipe.preco.preco_fipe.service;
 
+import fipe.preco.preco_fipe.domain.Role;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.exception.EmailAlreadyExistsException;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -17,12 +17,13 @@ public class UserService {
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    public List<User> findAll() {
-        return repository.findAll();
+    public Page<User> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public User save(User user) {
         assertEmailDoesNotExist(user.getEmail());
+        user.setRole(Role.USER.name());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
@@ -31,20 +32,16 @@ public class UserService {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    public void delete() {
-        var authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+    public void delete(User authenticatedUser) {
         repository.delete(authenticatedUser);
     }
 
-    public void update(User userToUpdate) {
-        var authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+    public void update(User authenticatedUser, User userToUpdate) {
         var savedUser = findById(authenticatedUser.getId());
 
         userToUpdate.setId(authenticatedUser.getId());
 
-        userToUpdate.setRoles(savedUser.getRoles());
+        userToUpdate.setRole(savedUser.getRole());
 
         userToUpdate.setEmail(userToUpdate.getEmail() == null ?
                 savedUser.getEmail() : userToUpdate.getEmail());

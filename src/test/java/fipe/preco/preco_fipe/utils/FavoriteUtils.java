@@ -6,13 +6,11 @@ import fipe.preco.preco_fipe.domain.VehicleData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class FavoriteUtils {
-    public Favorite newFavoriteToSave(User user, VehicleData vehicleData) {
+    public static Favorite newFavoriteToSave(User user, VehicleData vehicleData) {
 
         return Favorite.builder()
                 .user(user)
@@ -20,7 +18,7 @@ public class FavoriteUtils {
                 .build();
     }
 
-    public Favorite newFavoriteSaved(User user, VehicleData vehicleData) {
+    public static Favorite newFavoriteSaved(User user, VehicleData vehicleData) {
 
         return Favorite.builder()
                 .id(1)
@@ -29,7 +27,7 @@ public class FavoriteUtils {
                 .build();
     }
 
-    public List<Favorite> newFavoriteList(User user, VehicleData vehicleData) {
+    public static List<Favorite> newFavoriteList(User user, VehicleData vehicleData) {
         var favorite1 = Favorite.builder()
                 .id(1)
                 .user(user)
@@ -45,7 +43,7 @@ public class FavoriteUtils {
         return List.of(favorite1, favorite2);
     }
 
-    public Page<Favorite> newFavoritePage(User user, VehicleData vehicleData) {
+    public static Page<Favorite> newFavoritePage(User user, VehicleData vehicleData) {
         var pageable = Pageable.unpaged();
 
         var favorites = newFavoriteList(user, vehicleData);
