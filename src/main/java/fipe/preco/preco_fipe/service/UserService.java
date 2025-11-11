@@ -23,7 +23,7 @@ public class UserService {
 
     public User save(User user) {
         assertEmailDoesNotExist(user.getEmail());
-        user.setRole(Role.USER.name());
+        user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }

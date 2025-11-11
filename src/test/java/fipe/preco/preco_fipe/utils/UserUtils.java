@@ -16,21 +16,21 @@ public class UserUtils {
                 .id(1)
                 .email("test1@gmail.com")
                 .password("test1")
-                .role(Role.USER.name())
+                .role(Role.USER)
                 .build();
 
         var user2 = User.builder()
                 .id(2)
                 .email("test2@outlook.com")
                 .password("test2")
-                .role(Role.USER.name())
+                .role(Role.USER)
                 .build();
 
         var user3 = User.builder()
                 .id(3)
                 .email("test3@gmail.com")
                 .password("test3")
-                .role(Role.USER.name())
+                .role(Role.USER)
                 .build();
 
         return new ArrayList<>(List.of(user1, user2, user3));
@@ -48,7 +48,7 @@ public class UserUtils {
                 .id(4)
                 .email("test1@gmail.com")
                 .password("$2a$10$QvLzMZj0H3V7Z6p2Zv8F/O3FzXKkF2xY5Hq0jM2FsC3v1P7U7k0lO")
-                .role(Role.USER.name())
+                .role(Role.USER)
                 .build();
     }
 

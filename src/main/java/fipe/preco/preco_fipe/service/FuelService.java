@@ -4,6 +4,7 @@ import fipe.preco.preco_fipe.domain.Fuel;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.repository.FuelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class FuelService {
     private final FuelRepository fuelRepository;
 
+    @Cacheable("fuels")
     public Fuel findByFuelAcronym(String fuelAcronym) {
         return fuelRepository.findByFuelAcronym(fuelAcronym)
                 .orElseThrow(() -> new NotFoundException("Fuel not found"));

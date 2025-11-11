@@ -28,11 +28,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private String role;
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.equals(Role.ADMIN.name())? List.of(new SimpleGrantedAuthority(Role.ADMIN.name()), new SimpleGrantedAuthority(Role.USER.name()))
+        return role.equals(Role.ADMIN)? List.of(new SimpleGrantedAuthority(Role.ADMIN.name()), new SimpleGrantedAuthority(Role.USER.name()))
                 : List.of(new SimpleGrantedAuthority(Role.USER.name()));
     }
 
