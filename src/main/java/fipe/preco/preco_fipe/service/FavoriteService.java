@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,5 +45,9 @@ public class FavoriteService {
     public void delete(User user, Integer id) {
         assertFavoriteExists(id);
         favoriteRepository.deleteFavoriteByIdAndUser(id, user);
+    }
+
+    public boolean existsFavorite(String codeFipe, String modelYear, String fuelAcronym) {
+        return favoriteRepository.findByVehicleData_CodeFipeAndVehicleData_ModelYearAndVehicleData_Fuel_FuelAcronym(codeFipe, modelYear, fuelAcronym).isPresent();
     }
 }

@@ -2,6 +2,7 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.dto.request.FavoritePostRequest;
+import fipe.preco.preco_fipe.dto.response.FavoriteExistsGetResponse;
 import fipe.preco.preco_fipe.dto.response.FavoriteGetResponse;
 import fipe.preco.preco_fipe.dto.response.FavoritePostResponse;
 import fipe.preco.preco_fipe.exception.ApiError;
@@ -106,5 +107,18 @@ public class FavoriteController {
         favoriteService.delete(user, id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<FavoriteExistsGetResponse> existsFavorite(@AuthenticationPrincipal User user,
+                                                                    @RequestParam String codeFipe,
+                                                                    @RequestParam String modelYear,
+                                                                    @RequestParam String fuelAcronym) {
+
+        var exists = favoriteService.existsFavorite(codeFipe, modelYear, fuelAcronym);
+
+        var favoriteExistsGetResponse = new FavoriteExistsGetResponse(exists);
+
+        return ResponseEntity.ok(favoriteExistsGetResponse);
     }
 }
