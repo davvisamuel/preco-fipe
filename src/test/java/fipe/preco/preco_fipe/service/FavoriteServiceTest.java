@@ -40,7 +40,7 @@ class FavoriteServiceTest {
         var vehicleData = VehicleDataUtils.newVehicleData();
 
         var codeFipe = "038003-2";
-        var modelYear = "2017";
+        var modelYear = "1992";
         var fuelAcronym = "G";
 
         var favoriteToSave = FavoriteUtils.newFavoriteToSave(user, vehicleData);
@@ -166,6 +166,42 @@ class FavoriteServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> favoriteService.delete(user, id))
                 .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("existsFavorite returns true when favorite exists")
+    void existsFavorite_ReturnsTrue_WhenFavoriteExists() {
+        var codeFipe = "038003-2";
+
+        var modelYear = "1992";
+
+        var fuelAcronym = "G";
+
+        BDDMockito.when(favoriteRepository.findByVehicleData_CodeFipeAndVehicleData_ModelYearAndVehicleData_Fuel_FuelAcronym(codeFipe, modelYear, fuelAcronym))
+                .thenReturn(Optional.ofNullable(FavoriteUtils.newFavoriteSaved(UserUtils.newSavedUser(), VehicleDataUtils.newVehicleData())));
+
+        var exists = favoriteService.existsFavorite(codeFipe, modelYear, fuelAcronym);
+
+        Assertions.assertThat(exists).isEqualTo(true);
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("existsFavorite returns false when favorite not exists")
+    void existsFavorite_ReturnsFalse_WhenFavoriteNotExists() {
+        var codeFipe = "999999-9";
+
+        var modelYear = "2999";
+
+        var fuelAcronym = "Z";
+
+        BDDMockito.when(favoriteRepository.findByVehicleData_CodeFipeAndVehicleData_ModelYearAndVehicleData_Fuel_FuelAcronym(codeFipe, modelYear, fuelAcronym))
+                .thenReturn(Optional.empty());
+
+        var exists = favoriteService.existsFavorite(codeFipe, modelYear, fuelAcronym);
+
+        Assertions.assertThat(exists).isEqualTo(false);
     }
 
 }

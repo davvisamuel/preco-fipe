@@ -2,8 +2,12 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
+import fipe.preco.preco_fipe.domain.Favorite;
+import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
+import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.utils.AuthUtils;
+import fipe.preco.preco_fipe.utils.FavoriteUtils;
 import fipe.preco.preco_fipe.utils.FileUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,15 +18,20 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.platform.commons.annotation.Testable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = RestAssuredConfiguration.class)
@@ -43,6 +52,9 @@ class FavoriteControllerIT {
 
     @Autowired
     private FavoriteRepository favoriteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void setUrl() {
@@ -128,6 +140,59 @@ class FavoriteControllerIT {
 
         JsonAssertions.assertThatJson(response)
                 .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("existsFavorite returns true 200 when favorite exists")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/add_two_favorites.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_favorites.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void existsFavorite_ReturnsTrue_WhenFavoriteExists() throws IOException {
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
+        var expectedResponse = fileUtils.readResourceFile("/favorite/favorite-exists-get-response-200.json");
+
+        var user = userRepository.findByEmail("admin@example.com").get();
+
+        var favorite = favoriteRepository.findAllByUser(Pageable.ofSize(1), user)
+                .getContent().getFirst();
+
+        var response = RestAssured.given()
+                .auth().oauth2("Bearer " + adminToken)
+                .accept(ContentType.JSON)
+                .when()
+                .get("/v1/favorite?codeFipe=" + favorite.getVehicleData().getCodeFipe() + "&modelYear=" + favorite.getVehicleData().getModelYear() + "&fuelAcronym=" + favorite.getVehicleData().getFuel().getFuelAcronym())
+                .then()
+                .statusCode(HttpStatus.OK)
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("existsFavorite returns false 200 when favorite not exists")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void existsFavorite_ReturnsFalse_WhenFavoriteNotExists() throws IOException {
+        var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
+        var expectedResponse = fileUtils.readResourceFile("/favorite/favorite-not-exists-get-response-200.json");
+
+        var user = userRepository.findByEmail("admin@example.com").get();
+
+        var response = RestAssured.given()
+                .auth().oauth2("Bearer " + adminToken)
+                .accept(ContentType.JSON)
+                .when()
+                .get("/v1/favorite?codeFipe=" + "999999-9" + "&modelYear=" + "2999" + "&fuelAcronym=" + "Z")
+                .then()
+                .statusCode(HttpStatus.OK)
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response).isEqualTo(expectedResponse);
     }
 
 
