@@ -55,9 +55,13 @@ public class FavoriteController {
     public ResponseEntity<FavoritePostResponse> save(@AuthenticationPrincipal User user, @RequestBody @Valid FavoritePostRequest favoritePostRequest) {
         log.debug("Request received for '{}'", favoritePostRequest);
 
-        String codeFipe = favoritePostRequest.getCodeFipe();
+        var codeFipe = favoritePostRequest.getCodeFipe();
 
-        var favorite = favoriteService.save(user, codeFipe);
+        var modelYear = favoritePostRequest.getCodeFipe();
+
+        var fuelAcronym = favoritePostRequest.getCodeFipe();
+
+        var favorite = favoriteService.save(user, codeFipe, modelYear, fuelAcronym);
 
         var favoritePostResponse = favoriteMapper.toFavoritePostResponse(favorite);
 

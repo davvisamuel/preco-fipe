@@ -41,10 +41,10 @@ public class ConsultationController {
 
             @ApiResponse(responseCode = "403", description = "Forbidden - user does not have permission or token missing")
     })
-    public ResponseEntity<Page<ConsultationGetResponse>> findAllPaginated(@ParameterObject Pageable pageable) {
+    public ResponseEntity<Page<ConsultationGetResponse>> findAllPaginated(@AuthenticationPrincipal User user, @ParameterObject Pageable pageable) {
         log.debug("Request received for '{}'", pageable);
 
-        var consultationPage = consultationService.findAllPaginated(pageable);
+        var consultationPage = consultationService.findAllPaginated(user, pageable);
 
         var consultationGetResponsePage = consultationPage.map(consultationMapper::toConsultationGetResponse);
 

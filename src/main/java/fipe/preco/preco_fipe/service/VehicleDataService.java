@@ -23,10 +23,11 @@ public class VehicleDataService {
 
     public VehicleData saveVehicleData(FipeInformationResponse fipeInformationResponse) {
         var codeFipe = fipeInformationResponse.codeFipe();
+        var modelYear = fipeInformationResponse.modelYear();
         var fuelAcronym = fipeInformationResponse.fuelAcronym();
         var vehicleTypeId = fipeInformationResponse.vehicleType();
 
-        var optionalVehicleData = findByCodeFipe(codeFipe);
+        var optionalVehicleData = findByCodeFipeAndModelYearAndFuelAcronym(codeFipe, modelYear, fuelAcronym);
 
         if (optionalVehicleData.isPresent()) {
             return optionalVehicleData.get();
@@ -41,11 +42,11 @@ public class VehicleDataService {
         return vehicleDataRepository.save(vehicleData);
     }
 
-    public Optional<VehicleData> findByCodeFipe(String codeFipe) {
+    public Optional<VehicleData> findByCodeFipeAndModelYearAndFuelAcronym(String codeFipe, String modelYear, String fuelAcronym) {
         return vehicleDataRepository.findByCodeFipe(codeFipe);
     }
 
-    public VehicleData findByCodeFipeThrowsNotFoundException(String codeFipe) {
-        return findByCodeFipe(codeFipe).orElseThrow(() -> new NotFoundException("VehicleData not found"));
+    public VehicleData findByCodeFipeAndModelYearAndFuelAcronymOrThrowsNotFoundException(String codeFipe, String modelYear, String fuelAcronym) {
+        return findByCodeFipeAndModelYearAndFuelAcronym(codeFipe, modelYear, fuelAcronym).orElseThrow(() -> new NotFoundException("VehicleData not found"));
     }
 }

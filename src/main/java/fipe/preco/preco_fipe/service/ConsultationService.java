@@ -36,8 +36,8 @@ public class ConsultationService {
         return consultationRepository.findByIdAndUserAndComparisonIsNull(id, user).orElseThrow(() -> new NotFoundException("Consultation not found"));
     }
 
-    public Page<Consultation> findAllPaginated(Pageable pageable) {
-        return consultationRepository.findAllByComparisonIsNull(pageable);
+    public Page<Consultation> findAllPaginated(User user, Pageable pageable) {
+        return consultationRepository.findAllByUserAndComparisonIsNull(user, pageable);
     }
 
     public void delete(Integer id, User user) {

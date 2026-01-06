@@ -40,12 +40,14 @@ class FavoriteServiceTest {
         var vehicleData = VehicleDataUtils.newVehicleData();
 
         var codeFipe = "038003-2";
+        var modelYear = "2017";
+        var fuelAcronym = "G";
 
         var favoriteToSave = FavoriteUtils.newFavoriteToSave(user, vehicleData);
 
         var expectedFavorite = FavoriteUtils.newFavoriteSaved(user, vehicleData);
 
-        BDDMockito.when(vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe)).thenReturn(vehicleData);
+        BDDMockito.when(vehicleDataService.findByCodeFipeAndModelYearAndFuelAcronymOrThrowsNotFoundException(codeFipe, modelYear, fuelAcronym)).thenReturn(vehicleData);
 
         BDDMockito.when(favoriteMapper.toFavorite(user, vehicleData)).thenReturn(favoriteToSave);
 
@@ -59,7 +61,7 @@ class FavoriteServiceTest {
                 .isEqualTo(expectedFavorite);
 
         Assertions.assertThatNoException()
-                .isThrownBy(() -> favoriteService.save(user, codeFipe));
+                .isThrownBy(() -> favoriteService.save(user, codeFipe, modelYear, fuelAcronym));
     }
 
     @Test
@@ -69,11 +71,13 @@ class FavoriteServiceTest {
         var user = UserUtils.newSavedUser();
 
         var codeFipe = "999999-9";
+        var modelYear = "2099";
+        var fuelAcronym = "z";
 
-        BDDMockito.when(vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe)).thenThrow(new NotFoundException("VehicleData not found"));
+        BDDMockito.when(vehicleDataService.findByCodeFipeAndModelYearAndFuelAcronymOrThrowsNotFoundException(codeFipe, modelYear, fuelAcronym)).thenThrow(new NotFoundException("VehicleData not found"));
 
         Assertions.assertThatException()
-                .isThrownBy(() -> favoriteService.save(user, codeFipe))
+                .isThrownBy(() -> favoriteService.save(user, codeFipe, modelYear, fuelAcronym))
                 .isInstanceOf(NotFoundException.class);
     }
 

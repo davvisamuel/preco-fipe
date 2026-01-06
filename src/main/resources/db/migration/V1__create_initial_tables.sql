@@ -28,7 +28,7 @@ CREATE TABLE preco_fipe.vehicle_data
     model_year      VARCHAR(5)   NOT NULL,
     vehicle_type    VARCHAR(10)  NOT NULL,
 
-    CONSTRAINT UQ_vehicle_data_code_fipe UNIQUE (code_fipe),
+    CONSTRAINT UQ_vehicle_data_code_fipe_model_year_fuel_acronym UNIQUE (code_fipe, model_year, fuel_id),
     CONSTRAINT CK_vehicle_data_code_fipe CHECK (code_fipe <> ''),
     CONSTRAINT CK_vehicle_data_brand CHECK (brand <> ''),
     CONSTRAINT CK_vehicle_data_model CHECK (model <> ''),

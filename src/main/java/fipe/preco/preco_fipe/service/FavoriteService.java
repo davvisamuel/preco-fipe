@@ -20,8 +20,8 @@ public class FavoriteService {
     private final FavoriteMapper favoriteMapper;
     private final VehicleDataService vehicleDataService;
 
-    public Favorite save(User user, String codeFipe) {
-        var vehicleData = vehicleDataService.findByCodeFipeThrowsNotFoundException(codeFipe);
+    public Favorite save(User user, String codeFipe, String modelYear, String fuelAcronym) {
+        var vehicleData = vehicleDataService.findByCodeFipeAndModelYearAndFuelAcronymOrThrowsNotFoundException(codeFipe, modelYear, fuelAcronym);
 
         var favorite = favoriteMapper.toFavorite(user, vehicleData);
 

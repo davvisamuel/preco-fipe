@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ConsultationRepository extends JpaRepository<Consultation, Integer> {
 
-    Page<Consultation> findAllByComparisonIsNull(Pageable pageable);
+    Page<Consultation> findAllByUserAndComparisonIsNull(User user, Pageable pageable);
 
     Optional<Consultation> findByIdAndUserAndComparisonIsNull(Integer integer, User user);
 
