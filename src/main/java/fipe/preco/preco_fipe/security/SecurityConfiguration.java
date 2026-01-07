@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-
+    private final CustomCorsConfiguration customCorsConfiguration;
     private final AuthenticationFilter authenticationFilter;
     private static final String[] WHITE_LIST = {"/v1/api/**",
                                                 "/v1/auth/**",
@@ -34,6 +34,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(c -> c.configurationSource(customCorsConfiguration))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST).permitAll()
