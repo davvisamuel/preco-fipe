@@ -76,7 +76,7 @@ class UserControllerIT {
                 .extract().body().asString();
 
         JsonAssertions.assertThatJson(response)
-                .whenIgnoringPaths("[*].id")
+                .whenIgnoringPaths("content[*].id")
                 .isEqualTo(expectedResponse);
     }
 
