@@ -89,4 +89,14 @@ public class FipeApiController {
         var allModelsByBrandId = fipeApiService.retrieveFipeInformation(user, comparisonId, vehicleType, brandId, modelId, yearId);
         return ResponseEntity.ok(allModelsByBrandId);
     }
+
+    @GetMapping("/{codeFipe}/{modelYear}")
+    public ResponseEntity<FipeInformationResponse> findByCodeFipeAndYear(@AuthenticationPrincipal User user,
+                                                                         @PathVariable String codeFipe,
+                                                                         @PathVariable String modelYear) {
+
+        var fipeInformationResponse = fipeApiService.findByCodeFipeAndYear(user, codeFipe, modelYear);
+
+        return ResponseEntity.ok(fipeInformationResponse);
+    }
 }

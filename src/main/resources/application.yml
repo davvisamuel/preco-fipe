@@ -37,6 +37,7 @@ fipe-api:
   models-uri: /v2/{vehicleType}/brands/{brandId}/models
   years-uri: /v2/{vehicleType}/brands/{brandId}/models/{modelId}/years
   fipe-information-uri: /v2/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}
+  code-fipe-uri: /v2/cars/{codeFipe}/years/{modelYear}'
 
 security:
   jwt:

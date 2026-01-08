@@ -91,6 +91,25 @@ public class FipeApiService {
         return fipeInformationResponse;
     }
 
+    public FipeInformationResponse findByCodeFipeAndYear(User user, String codeFipe, String modelYear) {
+
+        var fipeInformationResponse = fipeApiClient.build()
+                .get()
+                .uri(fipeApiConfiguration.codeFipeUri(), codeFipe, modelYear)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                    var body = new String(response.getBody().readAllBytes());
+                    var fipeErrorResponse = mapper.readValue(body, FipeErrorResponse.class);
+                    throw new NotFoundException(fipeErrorResponse.toString());
+                }))
+                .body(FipeInformationResponse.class);
+
+        saveIfAuthenticated(user, null, fipeInformationResponse);
+
+        return fipeInformationResponse;
+    }
+
+
     public void saveIfAuthenticated(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
 
         if (user == null) {
