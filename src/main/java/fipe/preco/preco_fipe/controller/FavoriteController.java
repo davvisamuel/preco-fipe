@@ -1,5 +1,6 @@
 package fipe.preco.preco_fipe.controller;
 
+import fipe.preco.preco_fipe.domain.Favorite;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.dto.request.FavoritePostRequest;
 import fipe.preco.preco_fipe.dto.response.FavoriteExistsGetResponse;
@@ -58,11 +59,9 @@ public class FavoriteController {
 
         var codeFipe = favoritePostRequest.getCodeFipe();
 
-        var modelYear = favoritePostRequest.getCodeFipe();
+        var modelYear = favoritePostRequest.getModelYear();
 
-        var fuelAcronym = favoritePostRequest.getCodeFipe();
-
-        var favorite = favoriteService.save(user, codeFipe, modelYear, fuelAcronym);
+        var favorite = favoriteService.save(user, codeFipe, modelYear);
 
         var favoritePostResponse = favoriteMapper.toFavoritePostResponse(favorite);
 
@@ -112,12 +111,17 @@ public class FavoriteController {
     @GetMapping
     public ResponseEntity<FavoriteExistsGetResponse> existsFavorite(@AuthenticationPrincipal User user,
                                                                     @RequestParam String codeFipe,
-                                                                    @RequestParam String modelYear,
-                                                                    @RequestParam String fuelAcronym) {
+                                                                    @RequestParam String modelYear) {
 
-        var exists = favoriteService.existsFavorite(codeFipe, modelYear, fuelAcronym);
+        var optionalFavorite = favoriteService.existsFavorite(user, codeFipe, modelYear);
 
-        var favoriteExistsGetResponse = new FavoriteExistsGetResponse(exists);
+        var exists = optionalFavorite.isPresent();
+
+        var favoriteId = optionalFavorite
+                .map(Favorite::getId)
+                .orElse(null);
+
+        var favoriteExistsGetResponse = new FavoriteExistsGetResponse(exists, favoriteId);
 
         return ResponseEntity.ok(favoriteExistsGetResponse);
     }

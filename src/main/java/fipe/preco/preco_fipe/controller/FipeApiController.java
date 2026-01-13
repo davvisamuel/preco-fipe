@@ -65,7 +65,7 @@ public class FipeApiController {
 
     @GetMapping("/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}")
     @Operation(summary = "Get FIPE information by year ID",
-               description = "If the user is authenticated, the consultation will be saved automatically.")
+            description = "If the user is authenticated, the consultation will be saved automatically.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fipe information retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = FipeInformationResponse.class))),
@@ -90,12 +90,13 @@ public class FipeApiController {
         return ResponseEntity.ok(allModelsByBrandId);
     }
 
-    @GetMapping("/{codeFipe}/{modelYear}")
+    @GetMapping("/{vehicleType}/{codeFipe}/years/{modelYear}")
     public ResponseEntity<FipeInformationResponse> findByCodeFipeAndYear(@AuthenticationPrincipal User user,
+                                                                         @PathVariable String vehicleType,
                                                                          @PathVariable String codeFipe,
                                                                          @PathVariable String modelYear) {
 
-        var fipeInformationResponse = fipeApiService.findByCodeFipeAndYear(user, codeFipe, modelYear);
+        var fipeInformationResponse = fipeApiService.findByCodeFipeAndYear(user, vehicleType, codeFipe, modelYear);
 
         return ResponseEntity.ok(fipeInformationResponse);
     }

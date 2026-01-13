@@ -19,9 +19,9 @@ public class ConsultationProducer {
     private final ObjectMapper objectMapper;
 
 
-    public void send(Integer userId, Integer comparisonId, FipeInformationResponse fipeInformationResponse) throws JsonProcessingException {
+    public void send(Integer userId, Integer comparisonId, FipeInformationResponse fipeInformationResponse, String modelYear) throws JsonProcessingException {
 
-        var consultationProducerRequest = consultationProducerMapper.toConsultationProducerRequest(userId, comparisonId, fipeInformationResponse);
+        var consultationProducerRequest = consultationProducerMapper.toConsultationProducerRequest(userId, comparisonId, fipeInformationResponse, modelYear);
 
         var request = objectMapper.writeValueAsString(consultationProducerRequest);
 

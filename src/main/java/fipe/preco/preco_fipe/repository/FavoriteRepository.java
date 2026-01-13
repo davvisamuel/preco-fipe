@@ -18,5 +18,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer> {
     @Transactional
     void deleteFavoriteByIdAndUser(Integer id, User user);
 
-    Optional<Favorite> findByVehicleData_CodeFipeAndVehicleData_ModelYearAndVehicleData_Fuel_FuelAcronym(String codeFipe, String modelYear, String fuelAcronym);
+    Optional<Favorite> findByUserAndVehicleData_CodeFipeAndVehicleData_ModelYear(User user, String codeFipe, String modelYear);
 }

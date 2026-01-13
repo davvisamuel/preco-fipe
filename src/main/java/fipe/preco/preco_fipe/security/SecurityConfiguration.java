@@ -23,12 +23,12 @@ public class SecurityConfiguration {
     private final CustomCorsConfiguration customCorsConfiguration;
     private final AuthenticationFilter authenticationFilter;
     private static final String[] WHITE_LIST = {"/v1/api/**",
-                                                "/v1/auth/**",
-                                                "/v1/user/register",
-                                                "/swagger-ui.html",
-                                                "/swagger-ui/**",
-                                                "/v3/api-docs/**",
-                                                "/v3/api-docs.yaml"};
+            "/v1/auth/**",
+            "/v1/user/register",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

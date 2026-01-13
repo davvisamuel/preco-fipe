@@ -40,9 +40,11 @@ class VehicleDataServiceTest {
 
         var codeFipe = vehicleData.getCodeFipe();
 
-        BDDMockito.when(vehicleDataRepository.findByCodeFipe(codeFipe)).thenReturn(Optional.of(vehicleData));
+        var modelYear = vehicleData.getModelYear();
 
-        var response = vehicleDataService.saveVehicleData(fipeInformationResponse);
+        BDDMockito.when(vehicleDataRepository.findByCodeFipeAndModelYear(codeFipe, modelYear)).thenReturn(Optional.of(vehicleData));
+
+        var response = vehicleDataService.saveVehicleData(fipeInformationResponse, vehicleData.getModelYear());
 
         Assertions.assertThat(response)
                 .isNotNull()
@@ -56,13 +58,15 @@ class VehicleDataServiceTest {
     void saveVehicleData_CreatesVehicleData_WhenNotExists() {
         var fipeInformationResponse = FipeInformationUtils.newFipeInformationResponse();
 
+        var vehicleData = VehicleDataUtils.newVehicleData();
+
         var codeFipe = fipeInformationResponse.codeFipe();
+
+        var modelYear = vehicleData.getModelYear();
 
         var fuelAcronym = fipeInformationResponse.fuelAcronym();
 
-        BDDMockito.when(vehicleDataRepository.findByCodeFipe(codeFipe)).thenReturn(Optional.empty());
-
-        var vehicleData = VehicleDataUtils.newVehicleData();
+        BDDMockito.when(vehicleDataRepository.findByCodeFipeAndModelYear(codeFipe, modelYear)).thenReturn(Optional.empty());
 
         var fuelSaved = vehicleData.getFuel();
 
@@ -74,7 +78,7 @@ class VehicleDataServiceTest {
 
         BDDMockito.when(vehicleDataRepository.save(vehicleData)).thenReturn(vehicleData);
 
-        var response = vehicleDataService.saveVehicleData(fipeInformationResponse);
+        var response = vehicleDataService.saveVehicleData(fipeInformationResponse, vehicleData.getModelYear());
 
         Assertions.assertThat(response)
                 .isNotNull()

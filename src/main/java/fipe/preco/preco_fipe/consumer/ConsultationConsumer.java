@@ -32,6 +32,8 @@ public class ConsultationConsumer {
 
         var comparisonId = consultationProducerRequest.comparisonId();
 
-        consultationService.saveConsultation(user, comparisonId, fipeInformationResponse);
+        var modelYear = consultationProducerRequest.year();
+
+        consultationService.saveConsultation(user, comparisonId, fipeInformationResponse, modelYear);
     }
 }

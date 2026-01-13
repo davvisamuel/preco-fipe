@@ -20,7 +20,7 @@ public class VehicleDataUtils {
                 .fuel(fuel)
                 .brand("Acura")
                 .model("Integra GS 1.8")
-                .modelYear("1992")
+                .modelYear("1992-1")
                 .vehicleType("Carro")
                 .build();
     }

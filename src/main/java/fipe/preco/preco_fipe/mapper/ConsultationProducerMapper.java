@@ -8,5 +8,5 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ConsultationProducerMapper {
 
-    ConsultationProducerRequest toConsultationProducerRequest(Integer userId, Integer comparisonId, FipeInformationResponse fipeInformationResponse);
+    ConsultationProducerRequest toConsultationProducerRequest(Integer userId, Integer comparisonId, FipeInformationResponse fipeInformationResponse, String year);
 }

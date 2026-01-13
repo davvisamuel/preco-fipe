@@ -21,13 +21,12 @@ public class VehicleDataService {
     private final VehicleDataMapper vehicleDataMapper;
     private final FuelService fuelService;
 
-    public VehicleData saveVehicleData(FipeInformationResponse fipeInformationResponse) {
+    public VehicleData saveVehicleData(FipeInformationResponse fipeInformationResponse, String modelYear) {
         var codeFipe = fipeInformationResponse.codeFipe();
-        var modelYear = fipeInformationResponse.modelYear();
         var fuelAcronym = fipeInformationResponse.fuelAcronym();
         var vehicleTypeId = fipeInformationResponse.vehicleType();
 
-        var optionalVehicleData = findByCodeFipeAndModelYearAndFuelAcronym(codeFipe, modelYear, fuelAcronym);
+        var optionalVehicleData = findByCodeFipeAndModelYear(codeFipe, modelYear);
 
         if (optionalVehicleData.isPresent()) {
             return optionalVehicleData.get();
@@ -38,15 +37,16 @@ public class VehicleDataService {
         var vehicleTypeName = VehicleType.getVehicleTypeById(vehicleTypeId).orElse("N/A");
 
         var vehicleData = vehicleDataMapper.toVehicleData(fipeInformationResponse, fuel, vehicleTypeName);
+        vehicleData.setModelYear(modelYear);
 
         return vehicleDataRepository.save(vehicleData);
     }
 
-    public Optional<VehicleData> findByCodeFipeAndModelYearAndFuelAcronym(String codeFipe, String modelYear, String fuelAcronym) {
-        return vehicleDataRepository.findByCodeFipe(codeFipe);
+    public Optional<VehicleData> findByCodeFipeAndModelYear(String codeFipe, String modelYear) {
+        return vehicleDataRepository.findByCodeFipeAndModelYear(codeFipe, modelYear);
     }
 
-    public VehicleData findByCodeFipeAndModelYearAndFuelAcronymOrThrowsNotFoundException(String codeFipe, String modelYear, String fuelAcronym) {
-        return findByCodeFipeAndModelYearAndFuelAcronym(codeFipe, modelYear, fuelAcronym).orElseThrow(() -> new NotFoundException("VehicleData not found"));
+    public VehicleData findByCodeFipeAndModelYearOrThrowsNotFoundException(String codeFipe, String modelYear) {
+        return findByCodeFipeAndModelYear(codeFipe, modelYear).orElseThrow(() -> new NotFoundException("VehicleData not found"));
     }
 }

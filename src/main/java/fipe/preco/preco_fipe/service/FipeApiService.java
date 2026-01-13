@@ -86,16 +86,16 @@ public class FipeApiService {
                 }))
                 .body(FipeInformationResponse.class);
 
-        saveIfAuthenticated(user, comparisonId, fipeInformationResponse);
+        saveIfAuthenticated(user, comparisonId, fipeInformationResponse, yearId);
 
         return fipeInformationResponse;
     }
 
-    public FipeInformationResponse findByCodeFipeAndYear(User user, String codeFipe, String modelYear) {
+    public FipeInformationResponse findByCodeFipeAndYear(User user, String vehicleType, String codeFipe, String modelYear) {
 
         var fipeInformationResponse = fipeApiClient.build()
                 .get()
-                .uri(fipeApiConfiguration.codeFipeUri(), codeFipe, modelYear)
+                .uri(fipeApiConfiguration.codeFipeUri(), vehicleType, codeFipe, modelYear)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
                     var body = new String(response.getBody().readAllBytes());
@@ -104,13 +104,13 @@ public class FipeApiService {
                 }))
                 .body(FipeInformationResponse.class);
 
-        saveIfAuthenticated(user, null, fipeInformationResponse);
+        saveIfAuthenticated(user, null, fipeInformationResponse, modelYear);
 
         return fipeInformationResponse;
     }
 
 
-    public void saveIfAuthenticated(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
+    public void saveIfAuthenticated(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse, String modelYear) {
 
         if (user == null) {
             return;
@@ -124,7 +124,7 @@ public class FipeApiService {
         }
 
         try {
-            consultationProducer.send(user.getId(), comparisonId, fipeInformationResponse);
+            consultationProducer.send(user.getId(), comparisonId, fipeInformationResponse, modelYear);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Erro ao serializar mensagem para o RabbitMQ", e);
         }

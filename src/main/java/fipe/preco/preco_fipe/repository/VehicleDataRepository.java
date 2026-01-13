@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface VehicleDataRepository extends JpaRepository<VehicleData, Integer> {
 
-    Optional<VehicleData> findByCodeFipe(String codeFipe);
+    Optional<VehicleData> findByCodeFipeAndModelYear(String codeFipe, String modelYear);
 
+    String model(String model);
 }

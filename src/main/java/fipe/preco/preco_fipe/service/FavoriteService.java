@@ -22,8 +22,8 @@ public class FavoriteService {
     private final FavoriteMapper favoriteMapper;
     private final VehicleDataService vehicleDataService;
 
-    public Favorite save(User user, String codeFipe, String modelYear, String fuelAcronym) {
-        var vehicleData = vehicleDataService.findByCodeFipeAndModelYearAndFuelAcronymOrThrowsNotFoundException(codeFipe, modelYear, fuelAcronym);
+    public Favorite save(User user, String codeFipe, String modelYear) {
+        var vehicleData = vehicleDataService.findByCodeFipeAndModelYearOrThrowsNotFoundException(codeFipe, modelYear);
 
         var favorite = favoriteMapper.toFavorite(user, vehicleData);
 
@@ -47,7 +47,7 @@ public class FavoriteService {
         favoriteRepository.deleteFavoriteByIdAndUser(id, user);
     }
 
-    public boolean existsFavorite(String codeFipe, String modelYear, String fuelAcronym) {
-        return favoriteRepository.findByVehicleData_CodeFipeAndVehicleData_ModelYearAndVehicleData_Fuel_FuelAcronym(codeFipe, modelYear, fuelAcronym).isPresent();
+    public Optional<Favorite> existsFavorite(User user, String codeFipe, String modelYear) {
+        return favoriteRepository.findByUserAndVehicleData_CodeFipeAndVehicleData_ModelYear(user, codeFipe, modelYear);
     }
 }

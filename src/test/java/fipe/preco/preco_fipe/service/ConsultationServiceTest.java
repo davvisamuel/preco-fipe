@@ -44,7 +44,7 @@ class ConsultationServiceTest {
         var consultation = ConsultationUtils.newConsultationSaved(user, vehicleData);
 
 
-        BDDMockito.when(vehicleDataService.saveVehicleData(fipeInformationResponse))
+        BDDMockito.when(vehicleDataService.saveVehicleData(fipeInformationResponse, vehicleData.getModelYear()))
                 .thenReturn(vehicleData);
 
         BDDMockito.when(consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse))
@@ -54,7 +54,7 @@ class ConsultationServiceTest {
 
         Assertions.assertThatNoException()
                 .isThrownBy(() -> consultationService
-                        .saveConsultation(user, null, fipeInformationResponse));
+                        .saveConsultation(user, null, fipeInformationResponse, vehicleData.getModelYear()));
     }
 
     @Test
@@ -71,7 +71,7 @@ class ConsultationServiceTest {
 
         var consultation = ConsultationUtils.newConsultationOfComparisonSaved(user, vehicleData, comparison);
 
-        BDDMockito.when(vehicleDataService.saveVehicleData(fipeInformationResponse))
+        BDDMockito.when(vehicleDataService.saveVehicleData(fipeInformationResponse, vehicleData.getModelYear()))
                 .thenReturn(vehicleData);
 
         BDDMockito.when(consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse))
@@ -84,7 +84,7 @@ class ConsultationServiceTest {
 
         Assertions.assertThatNoException()
                 .isThrownBy(() -> consultationService
-                        .saveConsultation(user, comparison.getId(), fipeInformationResponse));
+                        .saveConsultation(user, comparison.getId(), fipeInformationResponse, vehicleData.getModelYear()));
     }
 
     @Test
@@ -101,7 +101,7 @@ class ConsultationServiceTest {
 
         var comparisonId = 999;
 
-        BDDMockito.when(vehicleDataService.saveVehicleData(fipeInformationResponse))
+        BDDMockito.when(vehicleDataService.saveVehicleData(fipeInformationResponse, vehicleData.getModelYear()))
                 .thenReturn(vehicleData);
 
         BDDMockito.when(consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse))
@@ -112,7 +112,7 @@ class ConsultationServiceTest {
 
         Assertions.assertThatException()
                 .isThrownBy(() -> consultationService
-                        .saveConsultation(user, comparisonId, fipeInformationResponse))
+                        .saveConsultation(user, comparisonId, fipeInformationResponse, vehicleData.getModelYear()))
                 .isInstanceOf(NotFoundException.class);
     }
 

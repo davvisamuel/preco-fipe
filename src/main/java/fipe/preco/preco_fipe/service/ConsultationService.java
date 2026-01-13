@@ -19,8 +19,8 @@ public class ConsultationService {
     private final VehicleDataService vehicleDataService;
     private final ComparisonService comparisonService;
 
-    public void saveConsultation(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse) {
-        var vehicleData = vehicleDataService.saveVehicleData(fipeInformationResponse);
+    public void saveConsultation(User user, Integer comparisonId, FipeInformationResponse fipeInformationResponse, String modelYear) {
+        var vehicleData = vehicleDataService.saveVehicleData(fipeInformationResponse, modelYear);
 
         var consultation = consultationMapper.toConsultation(user, vehicleData, fipeInformationResponse);
 
