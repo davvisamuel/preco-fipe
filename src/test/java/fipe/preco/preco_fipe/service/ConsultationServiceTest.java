@@ -203,7 +203,7 @@ class ConsultationServiceTest {
         var user = User.builder().build();
 
         BDDMockito.doNothing().when(consultationRepository).
-                deleteAllByUserAndComparisonIsNull(user);
+                deleteAllByUserAndComparisonIsNull(user.getId());
 
         Assertions.assertThatNoException()
                 .isThrownBy(() -> consultationService.deleteAllByUser(user));

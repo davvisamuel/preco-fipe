@@ -46,7 +46,7 @@ public class ConsultationService {
     }
 
     public void deleteAllByUser(User user) {
-        consultationRepository.deleteAllByUserAndComparisonIsNull(user);
+        consultationRepository.deleteAllByUserAndComparisonIsNull(user.getId());
     }
 
 }
