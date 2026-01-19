@@ -85,6 +85,7 @@ CREATE TABLE favorite
 
     CONSTRAINT FK_favorite_vehicle_data_id FOREIGN KEY (vehicle_data_id)
         REFERENCES preco_fipe.vehicle_data (id)
+            ON DELETE CASCADE
 );
 
 
