@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-01-21T11:23:07.4486877-03:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "The field 'currentPassword' is required, The field 'newEmail' is required",
+  "path": "/v1/user/email"
+}

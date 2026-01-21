@@ -2,12 +2,9 @@ package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
-import fipe.preco.preco_fipe.domain.Favorite;
-import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.utils.AuthUtils;
-import fipe.preco.preco_fipe.utils.FavoriteUtils;
 import fipe.preco.preco_fipe.utils.FileUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -18,20 +15,16 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.platform.commons.annotation.Testable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.spec.internal.HttpStatus;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Stream;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = RestAssuredConfiguration.class)

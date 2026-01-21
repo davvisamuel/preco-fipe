@@ -55,4 +55,11 @@ public class GlobalErrorHandlerAdvice {
         var defaultErrorMessage = new DefaultErrorMessage(e.getStatusCode().value(), e.getReason());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(defaultErrorMessage);
     }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<DefaultErrorMessage> handleInvalidPasswordException(InvalidPasswordException e) {
+        var defaultErrorMessage = new DefaultErrorMessage(e.getStatusCode().value(), e.getReason());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(defaultErrorMessage);
+    }
 }

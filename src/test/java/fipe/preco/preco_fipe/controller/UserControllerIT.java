@@ -1,7 +1,9 @@
 package fipe.preco.preco_fipe.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fipe.preco.preco_fipe.config.RestAssuredConfiguration;
 import fipe.preco.preco_fipe.config.TestcontainersConfiguration;
+import fipe.preco.preco_fipe.dto.request.UserEmailPutRequest;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.security.TokenService;
 import fipe.preco.preco_fipe.utils.AuthUtils;
@@ -49,6 +51,8 @@ class UserControllerIT {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUrl() {
@@ -282,12 +286,177 @@ class UserControllerIT {
                 .isEqualTo(expectedResponse);
     }
 
+    @Test
+    @Order(9)
+    @DisplayName("PUT v1/user/email returns 204 no content when successful")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void updateEmail_UpdatesEmail_WhenSuccessful() throws IOException {
+        var userToken = authUtils.login("/auth/post-auth-admin-request-200.json");
+
+        var request = fileUtils.readResourceFile("/user/put-user-email-request-200.json");
+
+        var userEmailPutRequest = objectMapper.readValue(request, UserEmailPutRequest.class);
+
+        RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .auth().oauth2("Bearer " + userToken)
+                .body(request)
+                .when()
+                .put("/v1/user/email")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .log().all();
+
+        var optionalUser = repository.findByEmail(userEmailPutRequest.getNewEmail());
+
+        Assertions.assertThat(optionalUser)
+                .isNotEmpty();
+
+        Assertions.assertThat(optionalUser.get())
+                .isNotNull()
+                .hasNoNullFieldsOrProperties();
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("PUT v1/user/email returns 403 FORBIDDEN when password is incorrect")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void updateEmail_ThrowsInvalidPasswordException_WhenIncorrectPassword() throws IOException {
+        var userToken = authUtils.login("/auth/post-auth-admin-request-200.json");
+
+        var request = fileUtils.readResourceFile("/user/put-user-email-request-403.json");
+
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-email-response-403.json");
+
+        var response = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .auth().oauth2("Bearer " + userToken)
+                .body(request)
+                .when()
+                .put("/v1/user/email")
+                .then()
+                .statusCode(HttpStatus.FORBIDDEN.value())
+                .log().all()
+                .extract().body().asString();
+
+
+        JsonAssertions.assertThatJson(response)
+                .isEqualTo(expectedResponse);
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("PUT v1/user/email returns 400 BAD REQUEST when email already exists")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void updateEmail_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyExists() throws IOException {
+        var userToken = authUtils.login("/auth/post-auth-admin-request-200.json");
+
+        var request = fileUtils.readResourceFile("/user/put-user-email-request-400.json");
+
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-email-response-400.json");
+
+        var response = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .auth().oauth2("Bearer " + userToken)
+                .body(request)
+                .when()
+                .put("/v1/user/email")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(response)
+                .isEqualTo(expectedResponse);
+    }
+
+    @ParameterizedTest
+    @MethodSource("providedPutEmailArguments")
+    @Order(12)
+    @DisplayName("updateEmail returns 400 bad request when invalid fields")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void updateEmail_ThrowsBadRequest_WhenInvalidFields(String requestPath, String expectedResponseBodyPath) throws IOException {
+        var requestBody = fileUtils.readResourceFile(requestPath);
+        var expectedResponseBody = fileUtils.readResourceFile(expectedResponseBodyPath);
+
+        var token = authUtils.login("/auth/post-auth-admin-request-200.json");
+
+        var responseBody = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .auth().oauth2("Bearer " + token)
+                .when()
+                .put("/v1/user/email")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(responseBody)
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponseBody);
+    }
+
+    @ParameterizedTest
+    @MethodSource("providedPutPasswordArguments")
+    @Order(13)
+    @DisplayName("updatePassword returns 400 bad request when invalid fields")
+    @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void updatePassword_ThrowsBadRequest_WhenInvalidFields(String requestPath, String expectedResponseBodyPath) throws IOException {
+        var requestBody = fileUtils.readResourceFile(requestPath);
+        var expectedResponseBody = fileUtils.readResourceFile(expectedResponseBodyPath);
+
+        var token = authUtils.login("/auth/post-auth-admin-request-200.json");
+
+        var responseBody = RestAssured.given()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .auth().oauth2("Bearer " + token)
+                .when()
+                .put("/v1/user/password")
+                .then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .log().all()
+                .extract().body().asString();
+
+        JsonAssertions.assertThatJson(responseBody)
+                .whenIgnoringPaths("timestamp")
+                .isEqualTo(expectedResponseBody);
+    }
+
+
     private static Stream<Arguments> providedPostArguments() {
         return Stream.of(
                 Arguments.of("/user/post-user-blank-fields-request-400.json", "/user/post-user-blank-fields-response-400.json"),
                 Arguments.of("/user/post-user-empty-fields-request-400.json", "/user/post-user-empty-fields-response-400.json"),
                 Arguments.of("/user/post-user-null-fields-request-400.json", "/user/post-user-null-fields-response-400.json")
 
+        );
+    }
+
+    private static Stream<Arguments> providedPutEmailArguments() {
+        return Stream.of(
+                Arguments.of("/user/put-user-email-blank-fields-request-400.json", "/user/put-user-email-blank-fields-response-400.json"),
+                Arguments.of("/user/put-user-email-empty-fields-request-400.json", "/user/put-user-email-empty-fields-response-400.json"),
+                Arguments.of("/user/put-user-email-null-fields-request-400.json", "/user/put-user-email-null-fields-response-400.json")
+        );
+    }
+
+    private static Stream<Arguments> providedPutPasswordArguments() {
+        return Stream.of(
+                Arguments.of("/user/put-user-password-blank-fields-request-400.json", "/user/put-user-password-blank-fields-response-400.json"),
+                Arguments.of("/user/put-user-password-empty-fields-request-400.json", "/user/put-user-password-empty-fields-response-400.json"),
+                Arguments.of("/user/put-user-password-null-fields-request-400.json", "/user/put-user-password-null-fields-response-400.json")
         );
     }
 }

@@ -5,11 +5,14 @@ import fipe.preco.preco_fipe.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserUtils {
+    public static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public static List<User> newUserList() {
         var user1 = User.builder()
@@ -47,9 +50,13 @@ public class UserUtils {
         return User.builder()
                 .id(4)
                 .email("test1@gmail.com")
-                .password("$2a$10$QvLzMZj0H3V7Z6p2Zv8F/O3FzXKkF2xY5Hq0jM2FsC3v1P7U7k0lO")
+                .password(passwordEncoder.encode(rawPasswordOfSavedUser()))
                 .role(Role.USER)
                 .build();
+    }
+
+    public static String rawPasswordOfSavedUser() {
+        return "test1";
     }
 
     public static User newUserToUpdate() {

@@ -1,6 +1,8 @@
 package fipe.preco.preco_fipe.controller;
 
 import fipe.preco.preco_fipe.domain.User;
+import fipe.preco.preco_fipe.dto.request.UserEmailPutRequest;
+import fipe.preco.preco_fipe.dto.request.UserPasswordPutRequest;
 import fipe.preco.preco_fipe.dto.request.UserPostRequest;
 import fipe.preco.preco_fipe.dto.request.UserPutRequest;
 import fipe.preco.preco_fipe.dto.response.UserGetResponse;
@@ -120,6 +122,21 @@ public class UserController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/email")
+    public ResponseEntity<Void> updateEmail(@AuthenticationPrincipal User user, @RequestBody @Valid UserEmailPutRequest userEmailPutRequest) {
+        service.updateEmail(user, userEmailPutRequest);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal User user, @RequestBody @Valid UserPasswordPutRequest userPasswordPutRequest) {
+        service.updatePassword(user, userPasswordPutRequest);
+
+        return ResponseEntity.noContent().build();
+    }
+
 
     @DeleteMapping
     @Operation(summary = "Delete a user", security = {@SecurityRequirement(name = "bearerAuth")})

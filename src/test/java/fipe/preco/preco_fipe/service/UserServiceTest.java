@@ -1,7 +1,10 @@
 package fipe.preco.preco_fipe.service;
 
 import fipe.preco.preco_fipe.domain.User;
+import fipe.preco.preco_fipe.dto.request.UserEmailPutRequest;
+import fipe.preco.preco_fipe.dto.request.UserPasswordPutRequest;
 import fipe.preco.preco_fipe.exception.EmailAlreadyExistsException;
+import fipe.preco.preco_fipe.exception.InvalidPasswordException;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.repository.UserRepository;
 import fipe.preco.preco_fipe.utils.UserUtils;
@@ -180,5 +183,127 @@ class UserServiceTest {
         Assertions.assertThatException()
                 .isThrownBy(() -> service.update(authenticatedUser, userToUpdate))
                 .isInstanceOf(EmailAlreadyExistsException.class);
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("updateEmail update email when successful")
+    void updateEmail_updatesEmail_WhenSuccessful() {
+        var authenticatedUser = UserUtils.newSavedUser();
+
+        var currentPassword = UserUtils.rawPasswordOfSavedUser();
+
+        var newEmail = "newEmail@example.com";
+
+        var userEmailPutRequest = UserEmailPutRequest.builder()
+                .currentPassword(currentPassword)
+                .newEmail(newEmail)
+                .build();
+
+        BDDMockito.when(passwordEncoder.matches(userEmailPutRequest.getCurrentPassword(), authenticatedUser.getPassword()))
+                .thenReturn(true);
+
+        BDDMockito.when(repository.findByEmailAndIdNot(newEmail, authenticatedUser.getId())).thenReturn(Optional.empty());
+
+        BDDMockito.when(repository.save(authenticatedUser.withEmail(newEmail))).thenReturn(authenticatedUser.withEmail(newEmail));
+
+        Assertions.assertThatNoException().isThrownBy(() -> service.updateEmail(authenticatedUser, userEmailPutRequest));
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("updateEmail throws EmailAlreadyExistsException when email already exists")
+    void updateEmail_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyExists() {
+        var authenticatedUser = UserUtils.newSavedUser();
+
+        var currentPassword = UserUtils.rawPasswordOfSavedUser();
+
+        var userThatAlreadyHasEmail = UserUtils.newUserList().getLast();
+
+        var newEmail = userThatAlreadyHasEmail.getEmail();
+
+        var userEmailPutRequest = UserEmailPutRequest.builder()
+                .currentPassword(currentPassword)
+                .newEmail(newEmail)
+                .build();
+
+        BDDMockito.when(passwordEncoder.matches(userEmailPutRequest.getCurrentPassword(), authenticatedUser.getPassword()))
+                .thenReturn(true);
+
+        BDDMockito.when(repository.findByEmailAndIdNot(newEmail, authenticatedUser.getId())).thenReturn(Optional.of(userThatAlreadyHasEmail));
+
+        Assertions.assertThatException().isThrownBy(() -> service.updateEmail(authenticatedUser, userEmailPutRequest))
+                .isInstanceOf(EmailAlreadyExistsException.class);
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("updateEmail throws InvalidPasswordException when password is incorrect")
+    void updateEmail_ThrowsInvalidPasswordException_WhenIncorrectPassword() {
+        var authenticatedUser = UserUtils.newSavedUser();
+
+        var invalidRawPassword = "incorrectPassword";
+
+        var newEmail = "newEmail@example.com";
+
+        var userEmailPutRequest = UserEmailPutRequest.builder()
+                .currentPassword(invalidRawPassword)
+                .newEmail(newEmail)
+                .build();
+
+        BDDMockito.when(passwordEncoder.matches(userEmailPutRequest.getCurrentPassword(), authenticatedUser.getPassword()))
+                .thenReturn(false);
+
+        Assertions.assertThatException().isThrownBy(() -> service.updateEmail(authenticatedUser, userEmailPutRequest))
+                .isInstanceOf(InvalidPasswordException.class);
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("updatePassword update password when successful")
+    void updatePassword_updatesPassword_WhenSuccessful() {
+        var authenticatedUser = UserUtils.newSavedUser();
+
+        var currentPassword = UserUtils.rawPasswordOfSavedUser();
+
+        var newPassword = "newPassword";
+
+        var userPasswordPutRequest = UserPasswordPutRequest.builder()
+                .currentPassword(currentPassword)
+                .newPassword(newPassword)
+                .build();
+
+        BDDMockito.when(passwordEncoder.matches(userPasswordPutRequest.getCurrentPassword(), authenticatedUser.getPassword()))
+                .thenReturn(true);
+
+        var passwordEncoded = "encrypt";
+
+        BDDMockito.when(passwordEncoder.encode(newPassword)).thenReturn(passwordEncoded);
+
+        BDDMockito.when(repository.save(authenticatedUser.withPassword(passwordEncoded))).thenReturn(authenticatedUser.withPassword(passwordEncoded));
+
+        Assertions.assertThatNoException().isThrownBy(() -> service.updatePassword(authenticatedUser, userPasswordPutRequest));
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("updatePassword throws InvalidPasswordException when password is incorrect")
+    void updatePassword_ThrowsInvalidPasswordException_WhenIncorrectPassword() {
+        var authenticatedUser = UserUtils.newSavedUser();
+
+        var invalidRawPassword = "incorrectPassword";
+
+        var newPassword = "newPassword";
+
+        var userPasswordPutRequest = UserPasswordPutRequest.builder()
+                .currentPassword(invalidRawPassword)
+                .newPassword(newPassword)
+                .build();
+
+        BDDMockito.when(passwordEncoder.matches(userPasswordPutRequest.getCurrentPassword(), authenticatedUser.getPassword()))
+                .thenReturn(false);
+
+        Assertions.assertThatException().isThrownBy(() -> service.updatePassword(authenticatedUser, userPasswordPutRequest))
+                .isInstanceOf(InvalidPasswordException.class);
     }
 }
