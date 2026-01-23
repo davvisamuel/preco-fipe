@@ -24,8 +24,8 @@ public class GlobalErrorHandlerAdvice {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<DefaultErrorMessage> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
-        var defaultErrorMessage = new DefaultErrorMessage(HttpStatus.BAD_REQUEST.value(), e.getReason());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(defaultErrorMessage);
+        var defaultErrorMessage = new DefaultErrorMessage(e.getStatusCode().value(), e.getReason());
+        return ResponseEntity.status(e.getStatusCode().value()).body(defaultErrorMessage);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
