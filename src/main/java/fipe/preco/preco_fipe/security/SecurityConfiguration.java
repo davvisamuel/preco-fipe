@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITE_LIST).permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/v1/user").hasAuthority(Role.USER.name())
-                        .requestMatchers(HttpMethod.PUT, "/v1/user").hasAuthority(Role.USER.name())
+                        .requestMatchers(HttpMethod.PUT, "/v1/user/**").hasAuthority(Role.USER.name())
                         .requestMatchers("/v1/favorite/**").hasAuthority(Role.USER.name())
                         .requestMatchers("/v1/comparison/**").hasAuthority(Role.USER.name())
                         .requestMatchers("/v1/consultation/**").hasAuthority(Role.USER.name())
