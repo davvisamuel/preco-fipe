@@ -3,6 +3,8 @@ package fipe.preco.preco_fipe.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "consultation")
 @Getter
@@ -33,4 +35,7 @@ public class Consultation {
     @ManyToOne
     @JoinColumn(name = "comparison_id")
     private Comparison comparison;
+
+    @Column(insertable = false, updatable = false)
+    private LocalDateTime createdAt;
 }
