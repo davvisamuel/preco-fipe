@@ -41,5 +41,6 @@ fipe-api:
 
 security:
   jwt:
+    refreshExpirationDays: 7
     secret: ${JWT_SECRET:preco-fipe-secret}
 

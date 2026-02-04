@@ -21,13 +21,12 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            var token = JWT.create()
+            return JWT.create()
                     .withIssuer("preco-fipe")
                     .withSubject(user.getId().toString())
                     .withExpiresAt(genExpiresAt())
                     .sign(algorithm);
 
-            return token;
         } catch (JWTCreationException e) {
             throw new RuntimeException("Error while generating token", e);
         }
@@ -37,19 +36,18 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            var subject = JWT.require(algorithm)
+            return JWT.require(algorithm)
                     .withIssuer("preco-fipe")
                     .build()
                     .verify(token)
                     .getSubject();
 
-            return subject;
         } catch (JWTCreationException e) {
             return "";
         }
     }
 
     public Instant genExpiresAt() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        return LocalDateTime.now().plusMinutes(15).toInstant(ZoneOffset.of("-03:00"));
     }
 }
