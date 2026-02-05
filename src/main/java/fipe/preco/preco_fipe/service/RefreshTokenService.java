@@ -21,11 +21,13 @@ public class RefreshTokenService {
 
     @Value("${security.jwt.refreshExpirationDays}")
     private Long refreshTokenDurationDays;
-
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenService tokenService;
 
     public RefreshToken createRefreshToken(User user) {
+
+        refreshTokenRepository.deleteByUser(user);
+
         var refreshTokenEntity = RefreshToken.builder()
                 .user(user)
                 .expiryDate(LocalDateTime.now().plusDays(refreshTokenDurationDays).toInstant(ZoneOffset.of("-03:00")))
@@ -36,14 +38,16 @@ public class RefreshTokenService {
     }
 
     public RefreshTokenPostResponse refreshToken(String token) {
-        var refreshTokenEntity = findByToken(token);
+        var oldRefreshToken = findByToken(token);
 
-        var user = refreshTokenEntity.getUser();
-
-        refreshTokenRepository.delete(refreshTokenEntity);
-
-        if (isTokenExpired(refreshTokenEntity))
+        if ( isTokenExpired(oldRefreshToken) ) {
+            refreshTokenRepository.delete(oldRefreshToken);
             throw new NotFoundException("Refresh token expired. Please login again.");
+        }
+
+        var user = oldRefreshToken.getUser();
+
+        refreshTokenRepository.delete(oldRefreshToken);
 
         var newRefreshToken = createRefreshToken(user).getToken();
 
@@ -56,9 +60,9 @@ public class RefreshTokenService {
     }
 
     public void delete(String token) {
-        var refreshTokenEntity = findByToken(token);
+        var refreshToken = findByToken(token);
 
-        refreshTokenRepository.delete(refreshTokenEntity);
+        refreshTokenRepository.delete(refreshToken);
     }
 
     public boolean isTokenExpired(RefreshToken refreshToken) {
