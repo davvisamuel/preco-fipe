@@ -1,72 +1,61 @@
 package fipe.preco.preco_fipe.service;
 
+import fipe.preco.preco_fipe.config.RefreshTokenProperties;
 import fipe.preco.preco_fipe.domain.RefreshToken;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.dto.request.RefreshTokenPostResponse;
+import fipe.preco.preco_fipe.exception.BadRequestException;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.repository.RefreshTokenRepository;
 import fipe.preco.preco_fipe.security.TokenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
-    @Value("${security.jwt.refreshExpirationDays}")
-    private Long refreshTokenDurationDays;
+    private final RefreshTokenProperties refreshTokenProperties;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenService tokenService;
 
+    @Transactional
     public RefreshToken createRefreshToken(User user) {
 
-        refreshTokenRepository.deleteByUser(user);
+        var refreshToken = user.getOrCreateRefreshToken();
 
-        var refreshTokenEntity = RefreshToken.builder()
-                .user(user)
-                .expiryDate(LocalDateTime.now().plusDays(refreshTokenDurationDays).toInstant(ZoneOffset.of("-03:00")))
-                .token(UUID.randomUUID().toString())
-                .build();
+        refreshToken.rotate(UUID.randomUUID().toString(), refreshTokenProperties.getExpiryDate());
 
-        return refreshTokenRepository.save(refreshTokenEntity);
+        return refreshTokenRepository.save(refreshToken);
     }
 
+    @Transactional
     public RefreshTokenPostResponse refreshToken(String token) {
-        var oldRefreshToken = findByToken(token);
+        var refreshToken = findByToken(token);
 
-        if ( isTokenExpired(oldRefreshToken) ) {
-            refreshTokenRepository.delete(oldRefreshToken);
-            throw new NotFoundException("Refresh token expired. Please login again.");
+        if (refreshToken.isExpired()) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new BadRequestException("Refresh token expired. Please login again.");
         }
 
-        var user = oldRefreshToken.getUser();
+        refreshToken.rotate(UUID.randomUUID().toString(), refreshTokenProperties.getExpiryDate());
 
-        refreshTokenRepository.delete(oldRefreshToken);
-
-        var newRefreshToken = createRefreshToken(user).getToken();
-
-        var jwtToken = tokenService.generationToken(user);
+        var jwtToken = tokenService.generationToken(refreshToken.getUser());
 
         return RefreshTokenPostResponse.builder()
-                .refreshToken(newRefreshToken)
+                .refreshToken(refreshToken.getToken())
                 .token(jwtToken)
                 .build();
     }
 
+    @Transactional
     public void delete(String token) {
         var refreshToken = findByToken(token);
 
-        refreshTokenRepository.delete(refreshToken);
-    }
-
-    public boolean isTokenExpired(RefreshToken refreshToken) {
-        return refreshToken.getExpiryDate().isBefore(Instant.now());
+        refreshToken.getUser().setRefreshToken(null);
     }
 
     public RefreshToken findByToken(String token) {

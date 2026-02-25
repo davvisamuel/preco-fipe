@@ -2,6 +2,7 @@ package fipe.preco.preco_fipe.service;
 
 import fipe.preco.preco_fipe.domain.Favorite;
 import fipe.preco.preco_fipe.domain.User;
+import fipe.preco.preco_fipe.dto.response.FavoriteExistsGetResponse;
 import fipe.preco.preco_fipe.exception.NotFoundException;
 import fipe.preco.preco_fipe.mapper.FavoriteMapper;
 import fipe.preco.preco_fipe.repository.FavoriteRepository;
@@ -10,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +46,15 @@ public class FavoriteService {
         favoriteRepository.deleteFavoriteByIdAndUser(id, user);
     }
 
-    public Optional<Favorite> existsFavorite(User user, String codeFipe, String modelYear) {
-        return favoriteRepository.findByUserAndVehicleData_CodeFipeAndVehicleData_ModelYear(user, codeFipe, modelYear);
+    public FavoriteExistsGetResponse existsFavorite(User user, String codeFipe, String modelYear) {
+        var optionalFavorite = favoriteRepository.findByUserAndVehicleData_CodeFipeAndVehicleData_ModelYear(user, codeFipe, modelYear);
+
+        var exists = optionalFavorite.isPresent();
+
+        var favoriteId = optionalFavorite
+                .map(Favorite::getId)
+                .orElse(null);
+
+        return new FavoriteExistsGetResponse(exists, favoriteId);
     }
 }

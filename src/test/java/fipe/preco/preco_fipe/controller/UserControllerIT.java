@@ -203,7 +203,7 @@ class UserControllerIT {
     }
 
     @Test
-    @DisplayName("PUT v1/user Throws BadRequest 400 when email already exists")
+    @DisplayName("PUT v1/user Throws Conflict 409 when email already exists")
     @Order(6)
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -212,7 +212,7 @@ class UserControllerIT {
 
         var request = fileUtils.readResourceFile("/user/put-user-request-400.json");
 
-        var expectedResponse = fileUtils.readResourceFile("/user/put-user-response-400.json");
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-response-409.json");
 
         var response = RestAssured.given()
                 .accept(ContentType.JSON)
@@ -222,7 +222,7 @@ class UserControllerIT {
                 .when()
                 .put("/v1/user")
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(HttpStatus.CONFLICT.value())
                 .log().all()
                 .extract().body().asString();
 
@@ -350,7 +350,7 @@ class UserControllerIT {
 
     @Test
     @Order(11)
-    @DisplayName("PUT v1/user/email returns 400 BAD REQUEST when email already exists")
+    @DisplayName("PUT v1/user/email returns 409 CONFLICT when email already exists")
     @Sql(value = "/sql/init_two_users.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = "/sql/clean_users.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateEmail_ThrowsEmailAlreadyExistsException_WhenEmailAlreadyExists() throws IOException {
@@ -358,7 +358,7 @@ class UserControllerIT {
 
         var request = fileUtils.readResourceFile("/user/put-user-email-request-400.json");
 
-        var expectedResponse = fileUtils.readResourceFile("/user/put-user-email-response-400.json");
+        var expectedResponse = fileUtils.readResourceFile("/user/put-user-email-response-409.json");
 
         var response = RestAssured.given()
                 .accept(ContentType.JSON)
@@ -368,7 +368,7 @@ class UserControllerIT {
                 .when()
                 .put("/v1/user/email")
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(HttpStatus.CONFLICT.value())
                 .log().all()
                 .extract().body().asString();
 

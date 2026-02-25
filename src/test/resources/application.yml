@@ -16,6 +16,8 @@ fipe-api:
   fipe-information-uri: /v2/{vehicleType}/brands/{brandId}/models/{modelId}/years/{yearId}
 
 security:
+  refresh-token:
+    refresh-expiration-days: 7
   jwt:
     secret: ${JWT_SECRET:preco-fipe-secret}
 

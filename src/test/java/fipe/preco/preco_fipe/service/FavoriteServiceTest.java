@@ -179,9 +179,9 @@ class FavoriteServiceTest {
         BDDMockito.when(favoriteRepository.findByUserAndVehicleData_CodeFipeAndVehicleData_ModelYear(user, codeFipe, modelYear))
                 .thenReturn(Optional.ofNullable(FavoriteUtils.newFavoriteSaved(UserUtils.newSavedUser(), VehicleDataUtils.newVehicleData())));
 
-        var exists = favoriteService.existsFavorite(user, codeFipe, modelYear);
+        var favoriteExistsGetResponse = favoriteService.existsFavorite(user, codeFipe, modelYear);
 
-        Assertions.assertThat(exists).isEqualTo(true);
+        Assertions.assertThat(favoriteExistsGetResponse.exists()).isEqualTo(true);
     }
 
     @Test
@@ -197,9 +197,9 @@ class FavoriteServiceTest {
         BDDMockito.when(favoriteRepository.findByUserAndVehicleData_CodeFipeAndVehicleData_ModelYear(user, codeFipe, modelYear))
                 .thenReturn(Optional.empty());
 
-        var exists = favoriteService.existsFavorite(user, codeFipe, modelYear);
+        var favoriteExistsGetResponse = favoriteService.existsFavorite(user, codeFipe, modelYear);
 
-        Assertions.assertThat(exists).isEqualTo(false);
+        Assertions.assertThat(favoriteExistsGetResponse.exists()).isEqualTo(false);
     }
 
 }

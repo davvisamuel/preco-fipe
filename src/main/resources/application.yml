@@ -40,7 +40,8 @@ fipe-api:
   code-fipe-uri: /v2/{vehicleType}/{codeFipe}/years/{modelYear}
 
 security:
+  refresh-token:
+    refresh-expiration-days: 7
   jwt:
-    refreshExpirationDays: 7
     secret: ${JWT_SECRET:preco-fipe-secret}
 

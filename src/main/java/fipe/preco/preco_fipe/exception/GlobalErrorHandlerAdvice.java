@@ -62,4 +62,11 @@ public class GlobalErrorHandlerAdvice {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(defaultErrorMessage);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<DefaultErrorMessage> handleBadRequestException(BadRequestException e) {
+        var defaultErrorMessage = new DefaultErrorMessage(e.getStatusCode().value(), e.getMessage());
+
+        return ResponseEntity.badRequest().body(defaultErrorMessage);
+    }
 }

@@ -1,6 +1,5 @@
 package fipe.preco.preco_fipe.controller;
 
-import fipe.preco.preco_fipe.domain.Favorite;
 import fipe.preco.preco_fipe.domain.User;
 import fipe.preco.preco_fipe.dto.request.FavoritePostRequest;
 import fipe.preco.preco_fipe.dto.response.FavoriteExistsGetResponse;
@@ -113,15 +112,7 @@ public class FavoriteController {
                                                                     @RequestParam String codeFipe,
                                                                     @RequestParam String modelYear) {
 
-        var optionalFavorite = favoriteService.existsFavorite(user, codeFipe, modelYear);
-
-        var exists = optionalFavorite.isPresent();
-
-        var favoriteId = optionalFavorite
-                .map(Favorite::getId)
-                .orElse(null);
-
-        var favoriteExistsGetResponse = new FavoriteExistsGetResponse(exists, favoriteId);
+        var favoriteExistsGetResponse = favoriteService.existsFavorite(user, codeFipe, modelYear);
 
         return ResponseEntity.ok(favoriteExistsGetResponse);
     }

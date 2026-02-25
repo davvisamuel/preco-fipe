@@ -8,6 +8,7 @@ import fipe.preco.preco_fipe.utils.AuthUtils;
 import fipe.preco.preco_fipe.utils.FileUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
 import io.restassured.specification.RequestSpecification;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.Assertions;
@@ -52,6 +53,7 @@ class FavoriteControllerIT {
     @BeforeEach
     void setUrl() {
         RestAssured.requestSpecification = requestSpecification;
+        RestAssured.defaultParser = Parser.JSON;
     }
 
     @Test
@@ -146,7 +148,7 @@ class FavoriteControllerIT {
         var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
         var expectedResponse = fileUtils.readResourceFile("/favorite/favorite-exists-get-response-200.json");
 
-        var user = userRepository.findByEmail("admin@example.com").get();
+        var user = userRepository.findByEmail("admin@example.com").orElseThrow();
 
         var favorite = favoriteRepository.findAllByUser(Pageable.ofSize(1), user)
                 .getContent().getFirst();
@@ -172,8 +174,6 @@ class FavoriteControllerIT {
     void existsFavorite_ReturnsFalse_WhenFavoriteNotExists() throws IOException {
         var adminToken = authUtils.login("/auth/post-auth-admin-request-200.json");
         var expectedResponse = fileUtils.readResourceFile("/favorite/favorite-not-exists-get-response-200.json");
-
-        var user = userRepository.findByEmail("admin@example.com").get();
 
         var response = RestAssured.given()
                 .auth().oauth2("Bearer " + adminToken)

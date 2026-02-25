@@ -84,7 +84,6 @@ class UserServiceTest {
 
         Assertions.assertThat(savedUser)
                 .isNotNull()
-                .hasNoNullFieldsOrProperties()
                 .isEqualTo(expectedUserSaved);
     }
 
@@ -117,7 +116,6 @@ class UserServiceTest {
 
         Assertions.assertThat(user)
                 .isNotNull()
-                .hasNoNullFieldsOrProperties()
                 .isEqualTo(savedUser);
     }
 
