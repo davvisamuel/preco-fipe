@@ -37,7 +37,7 @@ docker compose up
 <h3> Inicie o projeto </h3>
 
 ```bash
-
+mvn spring-boot:run
 ```
 
 <h2>📍 API Endpoints </h2>
