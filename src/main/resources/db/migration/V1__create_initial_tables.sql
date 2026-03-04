@@ -47,6 +47,7 @@ CREATE TABLE preco_fipe.comparison
 
     CONSTRAINT FK_comparison_user_id FOREIGN KEY (user_id)
         REFERENCES preco_fipe.user (id)
+            ON DELETE CASCADE
 );
 
 
@@ -63,7 +64,8 @@ CREATE TABLE preco_fipe.consultation
     CONSTRAINT CK_consultation_reference_month CHECK (reference_month <> ''),
 
     CONSTRAINT FK_consultation_user_id FOREIGN KEY (user_id)
-        REFERENCES preco_fipe.user (id),
+        REFERENCES preco_fipe.user (id)
+            ON DELETE CASCADE,
 
     CONSTRAINT FK_consultation_vehicle_data_id FOREIGN KEY (vehicle_data_id)
         REFERENCES preco_fipe.vehicle_data (id),
@@ -81,11 +83,11 @@ CREATE TABLE favorite
     created_at      DATETIME NOT NULL DEFAULT NOW(),
 
     CONSTRAINT FK_favorite_user_id FOREIGN KEY (user_id)
-        REFERENCES preco_fipe.user (id),
+        REFERENCES preco_fipe.user (id)
+            ON DELETE CASCADE,
 
     CONSTRAINT FK_favorite_vehicle_data_id FOREIGN KEY (vehicle_data_id)
         REFERENCES preco_fipe.vehicle_data (id)
-            ON DELETE CASCADE
 );
 
 
